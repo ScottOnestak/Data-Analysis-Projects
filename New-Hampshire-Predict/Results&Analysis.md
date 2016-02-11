@@ -35,8 +35,7 @@ not be that large of a coefficient on the surface, crowded fields - such as that
 
 On the GOP side, two factors seemed to be in play: NH primary polling results and a candidate's national polling average.  This
 national polling average has a negative correlation with the outcome in NH, which leads me to believe that the NH electorate is not
-your typical Republican electorate.  There are many reasons why that might be.  First is that there is a libertarian streak in NH.  
-The second is that NH is seen as a more moderate state than the typical Republican voter.  And third is that New Hampshire is an open
+your typical Republican electorate.  There are many reasons why that might be.  First is that there is a libertarian streak in NH. The second is that NH is seen as a more moderate state than the typical Republican voter.  And third is that New Hampshire is an open
 primary, so independents might heavily influence the results as opposed to the closed caucus of Iowa.
 
 ![Image of Republican Regression] (https://github.com/ScottOnestak/Data-Analysis-Projects/blob/master/New-Hampshire-Predict/RepReg.png)
