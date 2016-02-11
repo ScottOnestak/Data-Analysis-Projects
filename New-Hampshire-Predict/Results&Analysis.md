@@ -14,8 +14,7 @@ Gallup for New Hampshire.  The values used for polling in Iowa were collected fr
 been considered the "gold standard" by pollsters.
 
 Running multiple linear regression, it became clear that there was a distinct difference between the regressions of Republican and 
-Democratic candidates, which should not be all too surprising.  If the parties differ on political ideology, why should they not differ
-on how or why they select which candidate to support in a primary?
+Democratic candidates, which should not be all too surprising.  If the parties differ on political ideology, why should they not differ on how or why they select which candidate to support in a primary?
 
 Therefore, Republicans and Democrats were separated out into their own regressions in order to analyze the results and better predict
 the outcome of the New Hampshire primary.  The regressions for Republicans and Democrats are similar, but contain slight differences.
@@ -27,16 +26,12 @@ national polls from the time of Iowa caucus to the time of the New Hampshire pri
 
 What was interesting was that an increase in the national polls resulted in a decrease in NH performance.  An increase in the national
 polls after Iowa is usually driven by candiates that do well in the state.  This is usually attributed to two factors: winning Iowa
-and overperforming expectations.  And while these individual factors did show some signs of a relationship with performance in NH, they
-were far from a statistically significant relations.  That is why the change in national polls was a better representation of the
-overall sentiment after Iowa because it works as a proxy to understand both of those factors and more in order to determine people's 
-opinion on the candidates in the race after the first showing.
+and overperforming expectations.  And while these individual factors did show some signs of a relationship with performance in NH, they were far from a statistically significant relations.  That is why the change in national polls was a better representation of 
+the overall sentiment after Iowa because it works as a proxy to understand both of those factors and more in order to determine people's opinion on the candidates in the race after the first showing.
 
-What was also interesting was the negative relationship between the change in national polls and New Hampshire performance.  This leads
-me to believe that there is a large difference in the electorates of Iowa and New Hampshire.  Therefore, candidates who perform well in
-Iowa tend to perform less well in New Hampshire.  And while -.77% support in NH for every 1% gain nationally might not be that large of
-a coefficient on the surface, crowded fields - such as that on the GOP side this year - may be significantly impacted by this when
-the margins between the candidates are close.
+What was also interesting was the negative relationship between the change in national polls and New Hampshire performance.  This leads me to believe that there is a large difference in the electorates of Iowa and New Hampshire.  Therefore, candidates who 
+perform well in Iowa tend to perform less well in New Hampshire.  And while -.77% support in NH for every 1% gain nationally might 
+not be that large of a coefficient on the surface, crowded fields - such as that on the GOP side this year - may be significantly impacted by this when the margins between the candidates are close.
 
 On the GOP side, two factors seemed to be in play: NH primary polling results and a candidate's national polling average.  This
 national polling average has a negative correlation with the outcome in NH, which leads me to believe that the NH electorate is not
@@ -80,17 +75,14 @@ a few important take aways from the model.
 
 While the model could not accurately predict the correct results for all the candidates, it did predict much closer than just polling 
 averages alone.  In fact, the model better predicted the outcome of the Clinton-Sanders race than polls alone.  In addition, the model
-got the order of GOP contenders better than the polls.  For the polls, the top 5 would have looked like Trump, Rubio, Kasich, Cruz, and
-Bush - placing only Trump in the correct spot.  However, the model predicts the order Trump, Kasich, Rubio, Bush, Cruz - correctly 
-predicting all but Cruz and Rubio.  And delegate wise Cruz, Bush, and Rubio all tied because the vote count was so close between the 
-three, so in that sense, the model could be considered correct.
+got the order of GOP contenders better than the polls.  For the polls, the top 5 would have looked like Trump, Rubio, Kasich, Cruz, and Bush - placing only Trump in the correct spot.  However, the model predicts the order Trump, Kasich, Rubio, Bush, Cruz - 
+correctly predicting all but Cruz and Rubio.  And delegate wise Cruz, Bush, and Rubio all tied because the vote count was so close between the three, so in that sense, the model could be considered correct.
 
 2) The model was not able to predict results based on other events.
 
 The important factor with this is that the model was unable to correctly incorporate significant events into its prediction.  This is
 best exemplified through Marco Rubio.  The media believed he had a poor debate three days before the primary, which resulted in bad 
-press.  As a result, the debate performance as well as the negative publicity was not able to be taken into account for polling at both
-the state and national level, which made his results difficult to gauge for the model.
+press.  As a result, the debate performance as well as the negative publicity was not able to be taken into account for polling at both the state and national level, which made his results difficult to gauge for the model.
 
 3) The extremely small sample size may play an important element, and with more data points going forward, the model may improve.
 
@@ -105,8 +97,7 @@ of both.  The model's results showed that conventional wisdom prevailed in a sen
 than polling alone.  Therefore, there is a convential wisdom that these other factors are significant and in play when trying to
 predict the results of the New Hampshire primary.
 
-With that being said, every election cycle is unique in the sense that there are events that are unable to be accounted for - such as a
-poor debate performance, bad press, weather, accidents, etc.  Therefore, the model should be accepted with a grain of salt, not
+With that being said, every election cycle is unique in the sense that there are events that are unable to be accounted for - such as a poor debate performance, bad press, weather, accidents, etc.  Therefore, the model should be accepted with a grain of salt, not
 set-in-stone fact.  Since the model outperformed a polls-only analysis, my suggestion would be to perform the analysis and then assess
 the unique race from there.  Because the model is more accurate, it may lead people through convential wisdom to better results than
 applying that conventional wisdom to the polling results.
