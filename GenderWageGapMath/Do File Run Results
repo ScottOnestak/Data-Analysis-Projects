@@ -1,0 +1,730 @@
+. doedit "C:\Users\sonestak\Desktop\rep.do" 
+
+. do rep
+
+. //Scott Onestak
+. //ECO 231W Replication
+. 
+. use "D:\My Documents\theData.dta"
+
+. 
+. set more off
+
+. 
+. //rename variables to more understanble variable names
+. rename Q3SEX SEX
+
+. rename Q5RACE RACE
+
+. rename Q6AGE AGE
+
+. rename Q9A ENROLLED
+
+. rename Q1BYN DEGREE
+
+. rename Q12 GRADES
+
+. rename Q16A HoursPerWeek
+
+. rename Q16B FullTime
+
+. rename Q22YN FTExpBoolean
+
+. rename Q22YR FTExp
+
+. 
+. //reassign the Q3SEX variable for later use in the regression
+. //Males are 1... make them 0
+. //Females are 2... make them 1
+. replace SEX = 0 if SEX == 1
+(4579 real changes made)
+
+. replace SEX = 1 if SEX == 2
+(5732 real changes made)
+
+. 
+. //generate hourly wage variable if there are no missing variables in the formu
+> la
+. //make assumption the person works 52 weeks per year
+. replace SALARY = . if SALARY == 999999
+(0 real changes made)
+
+. replace HoursPerWeek = . if HoursPerWeek == 99 | HoursPerWeek == 0
+(1456 real changes made, 1456 to missing)
+
+. gen hourlyWage = SALARY / 52 / HoursPerWeek
+(1456 missing values generated)
+
+. 
+. //generate GPA... GPA values are the average of the bin extremes
+. //for example, when GRADES == 1, the bin is a GPA from 3.75 to 4.00.  therefor
+> e,
+. //take the average of these two to get the middle of the bin, 3.875
+. gen GPA = .
+(10311 missing values generated)
+
+. replace GPA = 3.875 if GRADES == 1
+(1398 real changes made)
+
+. replace GPA = 3.495 if GRADES == 2
+(3383 real changes made)
+
+. replace GPA = 2.995 if GRADES == 3
+(3540 real changes made)
+
+. replace GPA = 2.495 if GRADES == 4
+(1704 real changes made)
+
+. replace GPA = 1.995 if GRADES == 5
+(278 real changes made)
+
+. replace GPA = 1.495 if GRADES == 6
+(4 real changes made)
+
+. replace GPA = .625 if GRADES == 7
+(0 real changes made)
+
+. 
+. //generate the math content variable
+. gen MathCont = .
+(10311 missing values generated)
+
+. //GRE = 675 for Engeniering (13) and Physical Science (1900-2000)
+. replace MathCont = 675 if MAJOR == 13 | inrange(Q2MAJ,1900,2000)
+(1086 real changes made)
+
+. //GRE = 650 for Computer Science (700-800)
+. replace MathCont = 650 if inrange(Q2MAJ,700,800)
+(876 real changes made)
+
+. //GRE = 625 for Mathematics (1700-1800)
+. replace MathCont = 625 if inrange(Q2MAJ,1700,1800)
+(292 real changes made)
+
+. //GRE = 600 for Economics (2204)
+. replace MathCont = 600 if Q2MAJ == 2204
+(151 real changes made)
+
+. //GRE = 575 for Architecture (200-300) and Biology (21)
+. replace MathCont = 575 if inrange(Q2MAJ,200,300) | MAJOR == 21
+(450 real changes made)
+
+. //GRE = 500 for Agriculture (100-200), Business(11), Social Science (not Econ)
+. //(23 & !2240) & (2000-2100) ~ counted psychology with social science because 
+. //it's a social science and made the results more accurate, and "Other" (30)
+. replace MathCont = 500 if inrange(Q2MAJ,100,200) | MAJOR == 11 | (MAJOR == 23 
+> & Q2MAJ != 2204) | MAJOR == 30 | inrange(Q2MAJ,2000,2100)
+(3978 real changes made)
+
+. //GRE = 475 for Communications(600-700), Humanities (24), and Health (14)
+. replace MathCont = 475 if inrange(Q2MAJ,600,700) | MAJOR == 24 | MAJOR == 14
+(1908 real changes made)
+
+. //GRE = 450 for Education(12) and Home Economics (1300-1400)
+. replace MathCont = 450 if MAJOR == 12 | inrange(Q2MAJ,1300,1400)
+(1839 real changes made)
+
+. //GRE = 425 for Library Science (1600-1700) and Public Affairs (2100-2200)
+. replace MathCont = 425 if inrange(Q2MAJ,1600,1700) | inrange(Q2MAJ,2100,2200)
+(285 real changes made)
+
+. 
+. //generate the post degree experience.  Get the number of complete years by 
+. //subtracting from 84 because someone who graduated in 1984 could not have a 
+. //completed full year of experience.  Then add this to the months, calcuated b
+> y
+. //taking 16 (12 months in a year + 4 because it is being compared for the mont
+> h
+. //of April, the 4th month of the year) and subtracting by the month in which
+. //the individual received the degree to get the number of months.  Then dividi
+> ng
+. //by 12 to change the months units into years units.
+. gen PostDegExp = (84 - Q1BYR) + (16 - Q1BMO)/12
+
+. 
+. replace SCHOOLTYPE = 3 if SCHOOLTYPE == 4
+(530 real changes made)
+
+. 
+. //gen categories... 12 major controls 
+. gen MajorControl = 0
+
+. replace MajorControl = 1 if inrange(Q2MAJ,500,600)
+(2065 real changes made)
+
+. replace MajorControl = 2 if inrange(Q2MAJ,600,700)
+(347 real changes made)
+
+. replace MajorControl = 3 if inrange(Q2MAJ,700,800)
+(876 real changes made)
+
+. replace MajorControl = 4 if Q2MAJ == 2204
+(151 real changes made)
+
+. replace MajorControl = 5 if inrange(Q2MAJ,800,900)
+(1726 real changes made)
+
+. replace MajorControl = 6 if inrange(Q2MAJ,900,1000)
+(776 real changes made)
+
+. replace MajorControl = 7 if MAJOR == 24
+(971 real changes made)
+
+. replace MajorControl = 8 if inrange(Q2MAJ,1700,1800)
+(292 real changes made)
+
+. replace MajorControl = 9 if Q2MAJ == 1203
+(306 real changes made)
+
+. replace MajorControl = 10 if (MAJOR == 22 | MAJOR == 21) & MajorControl != 3 &
+>  MajorControl != 8
+(687 real changes made)
+
+. replace MajorControl = 11 if MAJOR == 23 & MajorControl != 4 | inrange(Q2MAJ,2
+> 000,2100)
+(1009 real changes made)
+
+. 
+. //generate technical majors...engineering, mathematics, physical science, and
+. //computer science
+. gen techMAJOR = 0
+
+. replace techMAJOR = 1 if inrange(Q2MAJ,900,1000) | inrange(Q2MAJ,1700,1800) | 
+> inrange(Q2MAJ,1900,2000) | inrange(Q2MAJ,700,800)
+(2254 real changes made)
+
+. 
+. //generate women with technical college majors based on if the person is a 
+. //woman and if she has a technical major
+. gen womenTechInt = 0
+
+. replace womenTechInt = 1 if techMAJ == 1 & SEX == 1
+(686 real changes made)
+
+. 
+. //generate women in elite schools
+. gen womenElite = 0
+
+. replace womenElite = 1 if SCHOOLTYPE == 0 & SEX == 1
+(670 real changes made)
+
+. 
+. //gen women in elite school with technical majors
+. gen womenTechElite = 0
+
+. replace womenTechElite = 1 if SCHOOLTYPE == 0 & techMAJ == 1 & SEX == 1
+(110 real changes made)
+
+. 
+. //gen women
+. gen womenTechUpper = 0
+
+. replace womenTechUpper = 1 if (SCHOOLTYPE == 0 | SCHOOLTYPE == 1) & techMAJ ==
+>  1 & SEX == 1
+(271 real changes made)
+
+. 
+. 
+. //generate the natural log of hourly wages for the regression
+. gen logHourlyWage = ln(hourlyWage)
+(1456 missing values generated)
+
+. 
+. //gen variable that tells us if the person is in the sample or not
+. gen inSample = 0
+
+. 
+. //inSample if: white (RACE == 1)
+. //             received degree in 83 or 84 (DEGREE == 1)
+. //             recieved a bachelor's degree (LDEG == 1)
+. //             employed ft or involuntary pt (FullTime == 1 | FullTime == 2)
+. //             not enrolled ft (ENROLLED == 2 | ENROLLED == 3)
+. //             no more than 30 years old (AGE <= 30)
+. //             earn more than $1 / hour (hourlyWage > 1)
+. //             no missing data on earnings (SALARY != .)
+. //             no missing data on hour per week (HoursPerWeek != .)
+. //             no missing work exp. (FTExpBoolean != 0 & FTExpBoolean != 99 & 
+. //                                      FTExp != 99)
+. //             no missing data on college grades (GRADES != 8 & GRADES != 9)
+. replace inSample = 1 if RACE == 1 & DEGREE == 1 & LDEG == 1 & (FullTime == 1 |
+>  FullTime == 2) & (ENROLLED == 2 | ENROLLED == 3) & AGE <= 30 & hourlyWage > 1
+>  & SALARY != . & HoursPerWeek != . & FTExpBoolean != 0 & FTExpBoolean != 99 & 
+> FTExp != 99 & GRADES != 8 & GRADES != 9
+(5048 real changes made)
+
+. 
+. //generate tabstat for the rows in table 1 of the paper
+. //hours worked per week(if not invol. part time) is excluded from this because
+. //it is calculated on it own directly aftewards
+. //the sample sizes are additionally not calculated in this step
+. //0 = White Males
+. //1 = White Females
+. //tabstat MathCont hourlyWage GPA FTExp PostDegExp Business Comm CompSci Econ 
+> Edu Engin Human Math Nursing Science SocSci if inSample == 1, by(SEX)
+. 
+. //calculate the hours worked per week (if not invol. part time)
+. //tabstat HoursPerWeek if inSample == 1 & FullTime == 1, by(SEX)
+. 
+. //Sample size White Males
+. count if inSample == 1 & SEX == 0
+ 2229
+
+. 
+. //Sample size White Females
+. count if inSample == 1 & SEX == 1
+ 2819
+
+. 
+. //Model 1: regress logHourlyWages onto white women, hours, predegree exp.,
+. //            postdegree exp., and GPA
+. reg logHourlyWage SEX HoursPerWeek FTExp PostDegExp GPA if inSample == 1,robus
+> t
+
+Linear regression                                      Number of obs =    5048
+                                                       F(  5,  5042) =   90.68
+                                                       Prob > F      =  0.0000
+                                                       R-squared     =  0.1195
+                                                       Root MSE      =  .37409
+
+------------------------------------------------------------------------------
+             |               Robust
+logHourlyW~e |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+         SEX |  -.2039286    .011476   -17.77   0.000    -.2264265   -.1814307
+HoursPerWeek |  -.0172123   .0012441   -13.83   0.000    -.0196513   -.0147733
+       FTExp |   .0138604    .003232     4.29   0.000     .0075243    .0201965
+  PostDegExp |   .0489185   .0196142     2.49   0.013     .0104662    .0873708
+         GPA |   .0724781   .0120128     6.03   0.000     .0489277    .0960284
+       _cons |   2.577613   .0705122    36.56   0.000     2.439379    2.715848
+------------------------------------------------------------------------------
+
+. 
+. //Model 1 with school type contol
+. xi: reg logHourlyWage SEX HoursPerWeek FTExp PostDegExp GPA i.SCHOOLTYPE if in
+> Sample == 1,robust
+i.SCHOOLTYPE      _ISCHOOLTYP_0-3     (naturally coded; _ISCHOOLTYP_0 omitted)
+
+Linear regression                                      Number of obs =    5048
+                                                       F(  8,  5039) =   65.81
+                                                       Prob > F      =  0.0000
+                                                       R-squared     =  0.1361
+                                                       Root MSE      =  .37066
+
+-------------------------------------------------------------------------------
+              |               Robust
+logHourlyWage |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+--------------+----------------------------------------------------------------
+          SEX |  -.1974553   .0113588   -17.38   0.000    -.2197236   -.1751871
+ HoursPerWeek |  -.0174067   .0012281   -14.17   0.000    -.0198144   -.0149991
+        FTExp |   .0156119   .0032249     4.84   0.000     .0092897    .0219341
+   PostDegExp |   .0413938   .0195374     2.12   0.034     .0030921    .0796956
+          GPA |     .07568   .0118765     6.37   0.000     .0523969    .0989632
+_ISCHOOLTYP_1 |  -.0960065   .0182594    -5.26   0.000    -.1318028   -.0602102
+_ISCHOOLTYP_2 |  -.1535745   .0172324    -8.91   0.000    -.1873574   -.1197915
+_ISCHOOLTYP_3 |  -.1522977   .0265387    -5.74   0.000    -.2043251   -.1002702
+        _cons |    2.69562   .0722655    37.30   0.000     2.553949    2.837292
+-------------------------------------------------------------------------------
+
+. 
+. //Model 2: regress logHourlyWages onto white women, hours, predegree exp.,
+. //            postdegree exp., GPA, and the 12 major controls
+. xi: reg logHourlyWage SEX HoursPerWeek FTExp PostDegExp GPA i.MajorControl if 
+> inSample == 1,robust
+i.MajorControl    _IMajorCont_0-11    (naturally coded; _IMajorCont_0 omitted)
+
+Linear regression                                      Number of obs =    5048
+                                                       F( 16,  5031) =  144.03
+                                                       Prob > F      =  0.0000
+                                                       R-squared     =  0.2953
+                                                       Root MSE      =  .33502
+
+-------------------------------------------------------------------------------
+              |               Robust
+logHourlyWage |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+--------------+----------------------------------------------------------------
+          SEX |  -.0979762   .0112368    -8.72   0.000    -.1200052   -.0759471
+ HoursPerWeek |  -.0186508   .0012485   -14.94   0.000    -.0210983   -.0162032
+        FTExp |   .0136402   .0031243     4.37   0.000     .0075152    .0197651
+   PostDegExp |   .0659001   .0178212     3.70   0.000     .0309629    .1008374
+          GPA |   .0683619   .0108843     6.28   0.000      .047024    .0896998
+_IMajorCont_1 |   .0496896   .0198019     2.51   0.012     .0108692    .0885101
+_IMajorCont_2 |  -.0377411   .0330725    -1.14   0.254    -.1025776    .0270953
+_IMajorCont_3 |   .2892113   .0220852    13.10   0.000     .2459147    .3325079
+_IMajorCont_4 |   .1520115    .041095     3.70   0.000     .0714474    .2325757
+_IMajorCont_5 |  -.1513554    .020528    -7.37   0.000    -.1915991   -.1111116
+_IMajorCont_6 |   .3810219   .0223326    17.06   0.000     .3372403    .4248036
+_IMajorCont_7 |  -.1678838   .0237508    -7.07   0.000    -.2144456   -.1213219
+_IMajorCont_8 |   .1599665   .0332353     4.81   0.000     .0948108    .2251222
+_IMajorCont_9 |   .2562975   .0229487    11.17   0.000     .2113081     .301287
+_IMajorCon~10 |  -.0248797   .0293345    -0.85   0.396     -.082388    .0326287
+_IMajorCon~11 |  -.1146501   .0248395    -4.62   0.000    -.1633462   -.0659539
+        _cons |    2.53407    .070224    36.09   0.000       2.3964    2.671739
+-------------------------------------------------------------------------------
+
+. 
+. //Model 2 with school type control
+. reg logHourlyWage SEX HoursPerWeek FTExp PostDegExp GPA i.MajorControl i.SCHOO
+> LTYPE if inSample == 1,robust
+
+Linear regression                                      Number of obs =    5048
+                                                       F( 19,  5028) =  126.34
+                                                       Prob > F      =  0.0000
+                                                       R-squared     =  0.3038
+                                                       Root MSE      =   .3331
+
+------------------------------------------------------------------------------
+             |               Robust
+logHourlyW~e |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+         SEX |  -.0970581   .0111724    -8.69   0.000    -.1189609   -.0751554
+HoursPerWeek |  -.0187227   .0012364   -15.14   0.000    -.0211465   -.0162989
+       FTExp |   .0148652   .0031171     4.77   0.000     .0087543    .0209761
+  PostDegExp |   .0592652   .0177823     3.33   0.001     .0244041    .0941263
+         GPA |   .0701936   .0108146     6.49   0.000     .0489923     .091395
+             |
+MajorControl |
+          1  |   .0578974   .0197869     2.93   0.003     .0191065    .0966883
+          2  |  -.0415395   .0327734    -1.27   0.205    -.1057896    .0227106
+          3  |   .2959241   .0219322    13.49   0.000     .2529275    .3389207
+          4  |   .1315841   .0410611     3.20   0.001     .0510865    .2120817
+          5  |  -.1375585    .020511    -6.71   0.000     -.177769   -.0973481
+          6  |    .367047   .0224301    16.36   0.000     .3230742    .4110198
+          7  |  -.1643007   .0238422    -6.89   0.000    -.2110418   -.1175595
+          8  |   .1666478   .0330881     5.04   0.000     .1017808    .2315148
+          9  |   .2632818   .0230533    11.42   0.000     .2180874    .3084763
+         10  |  -.0272833   .0292244    -0.93   0.351    -.0845759    .0300092
+         11  |   -.112853   .0247157    -4.57   0.000    -.1613065   -.0643996
+             |
+  SCHOOLTYPE |
+          1  |  -.0625691   .0164568    -3.80   0.000    -.0948317   -.0303066
+          2  |  -.1101993   .0155761    -7.07   0.000    -.1407353   -.0796633
+          3  |  -.1061623   .0236517    -4.49   0.000    -.1525299   -.0597947
+             |
+       _cons |   2.615164   .0727091    35.97   0.000     2.472622    2.757705
+------------------------------------------------------------------------------
+
+. 
+. //Model 3: regress logHourlyWages onto white women, hours, predegree exp.,
+. //            postdegree exp., GPA, and Mathematical content
+. reg logHourlyWage SEX HoursPerWeek FTExp PostDegExp GPA MathCont if inSample =
+> = 1,robust
+
+Linear regression                                      Number of obs =    5048
+                                                       F(  6,  5041) =  245.46
+                                                       Prob > F      =  0.0000
+                                                       R-squared     =  0.2339
+                                                       Root MSE      =  .34899
+
+------------------------------------------------------------------------------
+             |               Robust
+logHourlyW~e |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+         SEX |  -.1013793   .0116442    -8.71   0.000    -.1242071   -.0785516
+HoursPerWeek |  -.0178146   .0012504   -14.25   0.000    -.0202659   -.0153633
+       FTExp |   .0164326   .0031044     5.29   0.000     .0103465    .0225186
+  PostDegExp |   .0625694   .0181767     3.44   0.001     .0269352    .0982035
+         GPA |   .0652633    .011201     5.83   0.000     .0433046    .0872221
+    MathCont |   .0018026   .0000641    28.13   0.000     .0016769    .0019282
+       _cons |   1.600649   .0800422    20.00   0.000     1.443732    1.757567
+------------------------------------------------------------------------------
+
+. 
+. //Model 3 with school type control
+. xi: reg logHourlyWage SEX HoursPerWeek FTExp PostDegExp GPA MathCont i.SCHOOLT
+> YPE if inSample == 1,robust
+i.SCHOOLTYPE      _ISCHOOLTYP_0-3     (naturally coded; _ISCHOOLTYP_0 omitted)
+
+Linear regression                                      Number of obs =    5048
+                                                       F(  9,  5038) =  172.15
+                                                       Prob > F      =  0.0000
+                                                       R-squared     =  0.2422
+                                                       Root MSE      =  .34719
+
+-------------------------------------------------------------------------------
+              |               Robust
+logHourlyWage |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+--------------+----------------------------------------------------------------
+          SEX |  -.0997405   .0115843    -8.61   0.000    -.1224508   -.0770302
+ HoursPerWeek |  -.0179665   .0012394   -14.50   0.000    -.0203962   -.0155367
+        FTExp |   .0175968   .0030951     5.69   0.000     .0115291    .0236646
+   PostDegExp |   .0556504   .0181618     3.06   0.002     .0200453    .0912555
+          GPA |   .0681003   .0111345     6.12   0.000     .0462719    .0899287
+     MathCont |   .0017502   .0000646    27.11   0.000     .0016237    .0018768
+_ISCHOOLTYP_1 |  -.0505865   .0171658    -2.95   0.003     -.084239   -.0169341
+_ISCHOOLTYP_2 |  -.1029767   .0163836    -6.29   0.000    -.1350956   -.0708578
+_ISCHOOLTYP_3 |  -.1051366   .0246169    -4.27   0.000    -.1533966   -.0568767
+        _cons |   1.705771    .083817    20.35   0.000     1.541453    1.870089
+-------------------------------------------------------------------------------
+
+. 
+. //Model 4: regress logHourlyWages onto white women, hours, predegree exp.,
+. //            postdegree exp., GPA, Mathematical Content, and white women with
+. //            technical college majors
+. reg logHourlyWage SEX HoursPerWeek FTExp PostDegExp GPA MathCont womenTechInt 
+> if inSample == 1,robust
+
+Linear regression                                      Number of obs =    5048
+                                                       F(  7,  5040) =  210.28
+                                                       Prob > F      =  0.0000
+                                                       R-squared     =  0.2342
+                                                       Root MSE      =  .34894
+
+------------------------------------------------------------------------------
+             |               Robust
+logHourlyW~e |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+         SEX |  -.1100971    .013311    -8.27   0.000    -.1361924   -.0840017
+HoursPerWeek |  -.0178342   .0012508   -14.26   0.000    -.0202862   -.0153821
+       FTExp |   .0164978   .0031084     5.31   0.000      .010404    .0225916
+  PostDegExp |   .0633872   .0181666     3.49   0.000     .0277728    .0990015
+         GPA |    .065428   .0111933     5.85   0.000     .0434843    .0873716
+    MathCont |   .0017332   .0000789    21.97   0.000     .0015785    .0018878
+womenTechInt |   .0354498    .023268     1.52   0.128    -.0101656    .0810653
+       _cons |   1.638785   .0856281    19.14   0.000     1.470917    1.806654
+------------------------------------------------------------------------------
+
+. 
+. //Model 4 with school type control
+. xi: reg logHourlyWage SEX HoursPerWeek FTExp PostDegExp GPA MathCont womenTech
+> Int i.SCHOOLTYPE if inSample == 1,robust
+i.SCHOOLTYPE      _ISCHOOLTYP_0-3     (naturally coded; _ISCHOOLTYP_0 omitted)
+
+Linear regression                                      Number of obs =    5048
+                                                       F( 10,  5037) =  154.89
+                                                       Prob > F      =  0.0000
+                                                       R-squared     =  0.2428
+                                                       Root MSE      =  .34708
+
+-------------------------------------------------------------------------------
+              |               Robust
+logHourlyWage |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+--------------+----------------------------------------------------------------
+          SEX |  -.1111995   .0132604    -8.39   0.000    -.1371957   -.0852033
+ HoursPerWeek |  -.0179953   .0012397   -14.52   0.000    -.0204256   -.0155651
+        FTExp |   .0177032   .0031003     5.71   0.000     .0116254    .0237811
+   PostDegExp |   .0565658   .0181555     3.12   0.002     .0209731    .0921585
+          GPA |   .0683681   .0111223     6.15   0.000     .0465636    .0901725
+     MathCont |   .0016578   .0000796    20.81   0.000     .0015016    .0018139
+ womenTechInt |   .0467606   .0232201     2.01   0.044     .0012391     .092282
+_ISCHOOLTYP_1 |  -.0513668   .0171857    -2.99   0.003    -.0850582   -.0176753
+_ISCHOOLTYP_2 |  -.1047793   .0164338    -6.38   0.000    -.1369968   -.0725619
+_ISCHOOLTYP_3 |  -.1060148    .024672    -4.30   0.000    -.1543826   -.0576469
+        _cons |   1.757872     .08976    19.58   0.000     1.581904    1.933841
+-------------------------------------------------------------------------------
+
+. 
+. //interaction of elite school and women... no school type
+. xi: reg logHourlyWage SEX HoursPerWeek FTExp PostDegExp GPA MathCont womenElit
+> e if inSample == 1,robust
+
+Linear regression                                      Number of obs =    5048
+                                                       F(  7,  5040) =  211.63
+                                                       Prob > F      =  0.0000
+                                                       R-squared     =  0.2352
+                                                       Root MSE      =  .34872
+
+------------------------------------------------------------------------------
+             |               Robust
+logHourlyW~e |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+         SEX |  -.1093839   .0119282    -9.17   0.000    -.1327684   -.0859994
+HoursPerWeek |  -.0178664   .0012477   -14.32   0.000    -.0203124   -.0154204
+       FTExp |   .0165993   .0031023     5.35   0.000     .0105174    .0226813
+  PostDegExp |   .0616818   .0181486     3.40   0.001     .0261027    .0972609
+         GPA |     .06599   .0111888     5.90   0.000     .0440551     .087925
+    MathCont |   .0017887   .0000642    27.87   0.000     .0016629    .0019145
+  womenElite |   .0612061   .0214545     2.85   0.004     .0191459    .1032662
+       _cons |   1.609143   .0799841    20.12   0.000     1.452339    1.765947
+------------------------------------------------------------------------------
+
+. 
+. //school type included
+. xi: reg logHourlyWage SEX HoursPerWeek FTExp PostDegExp GPA MathCont womenElit
+> e i.SCHOOLTYPE if inSample == 1,robust
+i.SCHOOLTYPE      _ISCHOOLTYP_0-3     (naturally coded; _ISCHOOLTYP_0 omitted)
+
+Linear regression                                      Number of obs =    5048
+                                                       F( 10,  5037) =  154.76
+                                                       Prob > F      =  0.0000
+                                                       R-squared     =  0.2426
+                                                       Root MSE      =  .34712
+
+-------------------------------------------------------------------------------
+              |               Robust
+logHourlyWage |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+--------------+----------------------------------------------------------------
+          SEX |  -.0931532   .0119532    -7.79   0.000    -.1165867   -.0697197
+ HoursPerWeek |  -.0179259   .0012367   -14.50   0.000    -.0203503   -.0155014
+        FTExp |   .0176895    .003099     5.71   0.000     .0116141    .0237648
+   PostDegExp |   .0560539   .0181688     3.09   0.002     .0204352    .0916726
+          GPA |   .0677819   .0111428     6.08   0.000     .0459372    .0896266
+     MathCont |   .0017475   .0000647    27.03   0.000     .0016207    .0018742
+   womenElite |  -.0497827    .030849    -1.61   0.107    -.1102602    .0106947
+_ISCHOOLTYP_1 |  -.0756133    .023431    -3.23   0.001    -.1215483   -.0296783
+_ISCHOOLTYP_2 |  -.1284004   .0231397    -5.55   0.000    -.1737642   -.0830366
+_ISCHOOLTYP_3 |  -.1300986   .0292428    -4.45   0.000    -.1874272     -.07277
+        _cons |   1.727591   .0863567    20.01   0.000     1.558295    1.896888
+-------------------------------------------------------------------------------
+
+. 
+. //interaction of elite school, women, and tech major... no school type
+. xi: reg logHourlyWage SEX HoursPerWeek FTExp PostDegExp GPA MathCont womenTech
+> Elite if inSample == 1,robust
+
+Linear regression                                      Number of obs =    5048
+                                                       F(  7,  5040) =  210.59
+                                                       Prob > F      =  0.0000
+                                                       R-squared     =  0.2343
+                                                       Root MSE      =  .34891
+
+-------------------------------------------------------------------------------
+              |               Robust
+logHourlyWage |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+--------------+----------------------------------------------------------------
+          SEX |  -.1047222   .0118024    -8.87   0.000    -.1278601   -.0815844
+ HoursPerWeek |   -.017818   .0012502   -14.25   0.000    -.0202689    -.015367
+        FTExp |   .0164705   .0031052     5.30   0.000      .010383     .022558
+   PostDegExp |   .0628742   .0181595     3.46   0.001     .0272737    .0984747
+          GPA |   .0656379   .0111936     5.86   0.000     .0436935    .0875822
+     MathCont |   .0017754   .0000655    27.12   0.000     .0016471    .0019038
+womenTechEl~e |    .085258   .0481702     1.77   0.077    -.0091766    .1796926
+        _cons |   1.614443   .0804842    20.06   0.000     1.456659    1.772227
+-------------------------------------------------------------------------------
+
+. 
+. //school type included
+. xi: reg logHourlyWage SEX HoursPerWeek FTExp PostDegExp GPA MathCont womenTech
+> Elite i.SCHOOLTYPE if inSample == 1,robust
+i.SCHOOLTYPE      _ISCHOOLTYP_0-3     (naturally coded; _ISCHOOLTYP_0 omitted)
+
+Linear regression                                      Number of obs =    5048
+                                                       F( 10,  5037) =  154.93
+                                                       Prob > F      =  0.0000
+                                                       R-squared     =  0.2422
+                                                       Root MSE      =  .34722
+
+-------------------------------------------------------------------------------
+              |               Robust
+logHourlyWage |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+--------------+----------------------------------------------------------------
+          SEX |  -.1002258   .0117285    -8.55   0.000    -.1232188   -.0772328
+ HoursPerWeek |  -.0179669   .0012395   -14.50   0.000    -.0203969   -.0155369
+        FTExp |    .017593   .0030957     5.68   0.000     .0115242    .0236619
+   PostDegExp |   .0557068   .0181494     3.07   0.002      .020126    .0912876
+          GPA |   .0681435    .011137     6.12   0.000     .0463101    .0899769
+     MathCont |   .0017469   .0000654    26.70   0.000     .0016186    .0018752
+womenTechEl~e |   .0123015   .0500589     0.25   0.806    -.0858358    .1104388
+_ISCHOOLTYP_1 |  -.0495662   .0177357    -2.79   0.005    -.0843359   -.0147964
+_ISCHOOLTYP_2 |  -.1019452    .016977    -6.00   0.000    -.1352275   -.0686629
+_ISCHOOLTYP_3 |   -.104125   .0249823    -4.17   0.000    -.1531011   -.0551488
+        _cons |   1.706595   .0837992    20.37   0.000     1.542312    1.870877
+-------------------------------------------------------------------------------
+
+. 
+. //model 4 with elite school and women interaction
+. xi: reg logHourlyWage SEX HoursPerWeek FTExp PostDegExp GPA MathCont womenTech
+> Int womenElite if inSample == 1,robust
+
+Linear regression                                      Number of obs =    5048
+                                                       F(  8,  5039) =  185.07
+                                                       Prob > F      =  0.0000
+                                                       R-squared     =  0.2355
+                                                       Root MSE      =  .34868
+
+------------------------------------------------------------------------------
+             |               Robust
+logHourlyW~e |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+         SEX |  -.1179287   .0135458    -8.71   0.000    -.1444844    -.091373
+HoursPerWeek |  -.0178854   .0012481   -14.33   0.000    -.0203321   -.0154386
+       FTExp |   .0166629   .0031063     5.36   0.000     .0105733    .0227525
+  PostDegExp |   .0624901   .0181383     3.45   0.001     .0269311    .0980491
+         GPA |    .066149   .0111811     5.92   0.000     .0442291    .0880689
+    MathCont |   .0017205    .000079    21.78   0.000     .0015656    .0018753
+womenTechInt |   .0348801   .0232408     1.50   0.133    -.0106819    .0804421
+  womenElite |   .0609552   .0214458     2.84   0.004     .0189121    .1029983
+       _cons |   1.646632   .0855795    19.24   0.000     1.478859    1.814405
+------------------------------------------------------------------------------
+
+. 
+. //school type
+. xi: reg logHourlyWage SEX HoursPerWeek FTExp PostDegExp GPA MathCont womenTech
+> Int womenElite i.SCHOOLTYPE if inSample == 1,robust
+i.SCHOOLTYPE      _ISCHOOLTYP_0-3     (naturally coded; _ISCHOOLTYP_0 omitted)
+
+Linear regression                                      Number of obs =    5048
+                                                       F( 11,  5036) =  140.67
+                                                       Prob > F      =  0.0000
+                                                       R-squared     =  0.2433
+                                                       Root MSE      =    .347
+
+-------------------------------------------------------------------------------
+              |               Robust
+logHourlyWage |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+--------------+----------------------------------------------------------------
+          SEX |  -.1047607   .0134164    -7.81   0.000    -.1310627   -.0784587
+ HoursPerWeek |  -.0179533   .0012369   -14.51   0.000    -.0203782   -.0155284
+        FTExp |   .0178088   .0031048     5.74   0.000      .011722    .0238956
+   PostDegExp |    .057051    .018164     3.14   0.002     .0214416    .0926603
+          GPA |   .0680408   .0111299     6.11   0.000     .0462213    .0898603
+     MathCont |   .0016496   .0000801    20.60   0.000     .0014926    .0018066
+ womenTechInt |   .0493845   .0233293     2.12   0.034     .0036489    .0951201
+   womenElite |  -.0535197    .030985    -1.73   0.084    -.1142637    .0072242
+_ISCHOOLTYP_1 |   -.078316   .0235629    -3.32   0.001    -.1245095   -.0321225
+_ISCHOOLTYP_2 |  -.1322127   .0233238    -5.67   0.000    -.1779376   -.0864879
+_ISCHOOLTYP_3 |  -.1328998   .0293776    -4.52   0.000    -.1904928   -.0753069
+        _cons |   1.784254    .092808    19.23   0.000      1.60231    1.966198
+-------------------------------------------------------------------------------
+
+. 
+. //new model
+. xi: reg logHourlyWage SEX HoursPerWeek FTExp PostDegExp GPA MathCont womenTech
+> Upper if inSample == 1,robust
+
+Linear regression                                      Number of obs =    5048
+                                                       F(  7,  5040) =  211.87
+                                                       Prob > F      =  0.0000
+                                                       R-squared     =  0.2347
+                                                       Root MSE      =  .34884
+
+-------------------------------------------------------------------------------
+              |               Robust
+logHourlyWage |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+--------------+----------------------------------------------------------------
+          SEX |  -.1085354   .0122024    -8.89   0.000    -.1324574   -.0846135
+ HoursPerWeek |  -.0178317   .0012504   -14.26   0.000    -.0202831   -.0153804
+        FTExp |   .0165478   .0031076     5.32   0.000     .0104555    .0226401
+   PostDegExp |     .06236   .0181861     3.43   0.001     .0267072    .0980127
+          GPA |   .0664094   .0111978     5.93   0.000     .0444568     .088362
+     MathCont |   .0017456   .0000692    25.23   0.000     .0016099    .0018812
+womenTechUp~r |   .0744454    .029376     2.53   0.011     .0168558    .1320351
+        _cons |   1.629839   .0814992    20.00   0.000     1.470065    1.789613
+-------------------------------------------------------------------------------
+
+. 
+. xi: reg logHourlyWage SEX HoursPerWeek FTExp PostDegExp GPA MathCont womenTech
+> Upper i.SCHOOLTYPE if inSample == 1,robust
+i.SCHOOLTYPE      _ISCHOOLTYP_0-3     (naturally coded; _ISCHOOLTYP_0 omitted)
+
+Linear regression                                      Number of obs =    5048
+                                                       F( 10,  5037) =  155.12
+                                                       Prob > F      =  0.0000
+                                                       R-squared     =  0.2423
+                                                       Root MSE      =  .34719
+
+-------------------------------------------------------------------------------
+              |               Robust
+logHourlyWage |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+--------------+----------------------------------------------------------------
+          SEX |  -.1026032    .012172    -8.43   0.000    -.1264656   -.0787407
+ HoursPerWeek |  -.0179682   .0012396   -14.50   0.000    -.0203983   -.0155381
+        FTExp |   .0176152   .0030968     5.69   0.000      .011544    .0236863
+   PostDegExp |   .0557867   .0181599     3.07   0.002     .0201854     .091388
+          GPA |   .0684709   .0111386     6.15   0.000     .0466343    .0903074
+     MathCont |   .0017289   .0000692    24.97   0.000     .0015931    .0018646
+womenTechUp~r |   .0292397   .0299412     0.98   0.329    -.0294581    .0879375
+_ISCHOOLTYP_1 |  -.0501664   .0171518    -2.92   0.003    -.0837914   -.0165414
+_ISCHOOLTYP_2 |  -.1008458   .0165028    -6.11   0.000    -.1331986   -.0684931
+_ISCHOOLTYP_3 |  -.1030977   .0246669    -4.18   0.000    -.1514556   -.0547398
+        _cons |   1.715203   .0847813    20.23   0.000     1.548995    1.881411
+-------------------------------------------------------------------------------
