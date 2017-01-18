@@ -1,0 +1,1056 @@
+---
+title: "ElectionAnalysis"
+author: "sonestak"
+date: "December 23, 2016"
+output:
+  pdf_document:
+    toc: yes
+  html_document:
+    theme: united
+    toc: yes
+    toc_float: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+##Read In File
+```{r read vote file in}
+votes = read.csv("C:/Users/Scott/desktop/2012-and-2016-presidential-elections/votes.csv", header=T)
+```
+
+##Exploratory Analaysis - Maps
+
+###Basics
+```{r basic data understanding}
+colnames(votes)
+```
+
+###Vote Share Plots
+```{r voter share plots}
+library("choroplethr")
+library("choroplethrMaps")
+library("ggplot2")
+
+#Explore total votes per county
+total_votes = votes[,c(6,13)]
+colnames(total_votes) = c('value','region')
+
+vote_count = county_choropleth(total_votes,
+                               legend = "Votes",
+                               num_colors = 9,
+                               title = "Vote Count by County")
+vote_count
+
+#Break down county vote into regions of the US for easier viewing
+
+##New England Region
+vote_count_NE = county_choropleth(total_votes,
+                               legend = "Votes",
+                               num_colors = 9,
+                               title = "Vote Count by County - New England",
+                               state_zoom = c("maine","new hampshire", "vermont", "massachusetts","connecticut","rhode island"))
+vote_count_NE
+
+##Mid-Atlantic Region
+vote_count_MA = county_choropleth(total_votes,
+                               legend = "Votes",
+                               num_colors = 9,
+                               title = "Vote Count by County - Mid-Atlantic",
+                               state_zoom = c("new york", "pennsylvania", "new jersey", "maryland","delaware"))
+vote_count_MA
+
+##South East Region
+vote_count_SE = county_choropleth(total_votes,
+                               legend = "Votes",
+                               num_colors = 9,
+                               title = "Vote Count by County - South East",
+                               state_zoom = c("west virginia","virginia","tennessee","kentucky","north carolina","south carolina","georgia","florida","arkansas","mississippi","alabama","louisiana"))
+vote_count_SE
+
+##Mid West Region
+vote_count_MW = county_choropleth(total_votes,
+                               legend = "Votes",
+                               num_colors = 9,
+                               title = "Vote Count by County - Mid-West",
+                               state_zoom = c("ohio","michigan","indiana","illinois","wisconsin","minnesota","iowa","missouri","north dakota","south dakota","nebraska","kansas"))
+vote_count_MW
+
+##South West Region
+vote_count_SW = county_choropleth(total_votes,
+                               legend = "Votes",
+                               num_colors = 9,
+                               title = "Vote Count by County - South West",
+                               state_zoom = c("texas","oklahoma","new mexico","arizona"))
+vote_count_SW
+
+
+##West Region
+vote_count_W = county_choropleth(total_votes,
+                               legend = "Votes",
+                               num_colors = 9,
+                               title = "Vote Count by County - West",
+                               state_zoom = c("colorado","wyoming","montana","idaho","utah","nevada","california","oregon","washington","alaska","hawaii"))
+vote_count_W
+
+
+#Explore Vote Count by Swing States
+vote_count_swing = county_choropleth(total_votes,
+                                     legend = "Votes",
+                                     num_colors = 9,
+                                     title = "Vote Count by County - Swing States",
+                                     state_zoom = c("new hampshire","pennsylvania","ohio","michigan","north carolina","florida","arizona","iowa","nevada","wisconsin","virginia","colorado","minnesota","maine"))
+vote_count_swing
+```
+
+###Obama to Clinton (2012 to 2016 Change)
+```{r change in total number of democratic votes from Obama to Clinton}
+votes$change_dem_votes = votes$votes_dem_2016 - votes$votes_dem_2012
+
+dem_votes = votes[,c(13,83)]
+dem_votes[,3] = NA
+colnames(dem_votes) = c('region','votes','value')
+
+for(i in seq(1:dim(dem_votes)[1])){
+  if(dem_votes[i,2] > 0 && dem_votes[i,2] < 1000){
+    dem_votes[i,3] = "Gain - Small"
+  } else if(dem_votes[i,2] > 1000 && dem_votes[i,2] < 10000){
+    dem_votes[i,3] = "Gain - Considerable"
+  } else if(dem_votes[i,2] >= 10000){
+    dem_votes[i,3] = "Gain - Large"
+  } else if(dem_votes[i,2] < 0 && dem_votes[i,2] > -1000) {
+    dem_votes[i,3] = "Loss - Small"
+  } else if(dem_votes[i,2] < -1000 && dem_votes[i,2] > -10000){
+    dem_votes[i,3] = "Loss - Considerable"
+  } else if(dem_votes[i,2] < -10000){
+    dem_votes[i,3] = "Loss - Large"
+  } else{
+  dem_votes[i,3] = "Equal"
+  }
+}
+
+c = CountyChoropleth$new(dem_votes)
+c$title = "Change from Obama to Clinton where Blue Represents better Clinton Performance"
+c$add_state_outline = TRUE
+c$legend = "Change in Votes"
+c$set_num_colors(7)
+c$ggplot_scale = scale_fill_manual(values = c("white", "blue","navy","deepskyblue","red","darkred","lightpink"))
+dem_change_US = c$render() + 
+              theme(legend.position = "right")
+dem_change_US
+
+#Break down county vote into regions of the US for easier viewing
+
+##New England Region
+c = CountyChoropleth$new(dem_votes)
+c$title = "Change from Obama to Clinton (Blue = Better Clinton) - New England"
+c$add_state_outline = TRUE
+c$legend = "Change in Votes"
+c$set_num_colors(6)
+c$ggplot_scale = scale_fill_manual(values = c("blue","navy","deepskyblue","red","darkred","lightpink"))
+c$set_zoom(c("maine","new hampshire", "vermont", "massachusetts","connecticut","rhode island"))
+dem_change_NE = c$render() + 
+              theme(legend.position = "right")
+dem_change_NE
+
+##Mid-Atlantic Region
+c = CountyChoropleth$new(dem_votes)
+c$title = "Change from Obama to Clinton (Blue = Better Clinton) - Mid-Atlantic"
+c$add_state_outline = TRUE
+c$legend = "Change in Votes"
+c$set_num_colors(6)
+c$ggplot_scale = scale_fill_manual(values = c("blue","navy","deepskyblue","red","darkred","lightpink"))
+c$set_zoom(c("new york", "pennsylvania", "new jersey", "maryland","delaware"))
+dem_change_MA = c$render() + 
+              theme(legend.position = "right")
+dem_change_MA
+
+##South East Region
+c = CountyChoropleth$new(dem_votes)
+c$title = "Change from Obama to Clinton (Blue = Better Clinton) - South East"
+c$add_state_outline = TRUE
+c$legend = "Change in Votes"
+c$set_num_colors(7)
+c$ggplot_scale = scale_fill_manual(values = c("white","blue","navy","deepskyblue","red","darkred","lightpink"))
+c$set_zoom(c("west virginia","virginia","tennessee","kentucky","north carolina","south carolina","georgia","florida","arkansas","mississippi","alabama","louisiana"))
+dem_change_SE = c$render() + 
+              theme(legend.position = "right")
+dem_change_SE
+
+##Mid West Region
+c = CountyChoropleth$new(dem_votes)
+c$title = "Change from Obama to Clinton (Blue = Better Clinton) - Mid West"
+c$add_state_outline = TRUE
+c$legend = "Change in Votes"
+c$set_num_colors(6)
+c$ggplot_scale = scale_fill_manual(values = c("blue","navy","deepskyblue","red","darkred","lightpink"))
+c$set_zoom(c("ohio","michigan","indiana","illinois","wisconsin","minnesota","iowa","missouri","north dakota","south dakota","nebraska","kansas"))
+dem_change_MW = c$render() + 
+              theme(legend.position = "right")
+dem_change_MW
+
+##South West Region
+c = CountyChoropleth$new(dem_votes)
+c$title = "Change from Obama to Clinton (Blue = Better Clinton) - South West"
+c$add_state_outline = TRUE
+c$legend = "Change in Votes"
+c$set_num_colors(7)
+c$ggplot_scale = scale_fill_manual(values = c("white","blue","navy","deepskyblue","red","darkred","lightpink"))
+c$set_zoom(c("texas","oklahoma","new mexico","arizona"))
+dem_change_SW = c$render() + 
+              theme(legend.position = "right")
+dem_change_SW
+
+##West Region
+c = CountyChoropleth$new(dem_votes)
+c$title = "Change from Obama to Clinton (Blue = Better Clinton) - West"
+c$add_state_outline = TRUE
+c$legend = "Change in Votes"
+c$set_num_colors(7)
+c$ggplot_scale = scale_fill_manual(values = c("white","blue","navy","deepskyblue","red","darkred","lightpink"))
+c$set_zoom(c("colorado","wyoming","montana","idaho","utah","nevada","california","oregon","washington","alaska","hawaii"))
+dem_change_W = c$render() + 
+              theme(legend.position = "right")
+dem_change_W
+
+#Explore Vote Count by Swing States
+c = CountyChoropleth$new(dem_votes)
+c$title = "Change from Obama to Clinton (Blue = Better Clinton) - Swing States"
+c$add_state_outline = TRUE
+c$legend = "Change in Votes"
+c$set_num_colors(6)
+c$ggplot_scale = scale_fill_manual(values = c("blue","navy","deepskyblue","red","darkred","lightpink"))
+c$set_zoom(c("new hampshire","pennsylvania","ohio","michigan","north carolina","florida","arizona","iowa","nevada","wisconsin","virginia","colorado","minnesota","maine"))
+dem_change_swing = c$render() + 
+              theme(legend.position = "right")
+dem_change_swing
+```
+
+###Romney to Trump (2012 to 2016 Change)
+```{r change in total number of republican votes from Romney to Trump}
+votes$change_rep_votes = votes$votes_gop_2016 - votes$votes_gop_2012
+
+rep_votes = votes[,c(13,84)]
+rep_votes[,3] = NA
+colnames(rep_votes) = c('region','votes','value')
+
+for(i in seq(1:dim(rep_votes)[1])){
+  if(rep_votes[i,2] > 0 && rep_votes[i,2] < 1000){
+    rep_votes[i,3] = "Gain - Small"
+  } else if(rep_votes[i,2] > 1000 && rep_votes[i,2] < 10000){
+    rep_votes[i,3] = "Gain - Considerable"
+  } else if(rep_votes[i,2] >= 10000){
+    rep_votes[i,3] = "Gain - Large"
+  } else if(rep_votes[i,2] < 0 && rep_votes[i,2] > -1000) {
+    rep_votes[i,3] = "Loss - Small"
+  } else if(rep_votes[i,2] < -1000 && rep_votes[i,2] > -10000){
+    rep_votes[i,3] = "Loss - Considerable"
+  } else if(rep_votes[i,2] < -10000){
+    rep_votes[i,3] = "Loss - Large"
+  } else{
+  rep_votes[i,3] = "Equal"
+  }
+}
+
+c = CountyChoropleth$new(rep_votes)
+c$title = "Change from Romney to Trump where Red Represents better Trump Performance"
+c$add_state_outline = TRUE
+c$legend = "Change in Votes"
+c$set_num_colors(7)
+c$ggplot_scale = scale_fill_manual(values = c("white","red","darkred","lightpink","blue","navy","deepskyblue"))
+rep_change_US = c$render() + 
+              theme(legend.position = "right")
+rep_change_US
+
+#Break down county vote into regions of the US for easier viewing
+
+##New England Region
+c = CountyChoropleth$new(rep_votes)
+c$title = "Change from Romney to Trump (Red = Better Trump) - New England"
+c$add_state_outline = TRUE
+c$legend = "Change in Votes"
+c$set_num_colors(6)
+c$ggplot_scale = scale_fill_manual(values = c("red","darkred","lightpink","blue","navy","deepskyblue"))
+c$set_zoom(c("maine","new hampshire", "vermont", "massachusetts","connecticut","rhode island"))
+rep_change_NE = c$render() + 
+              theme(legend.position = "right")
+rep_change_NE
+
+##Mid-Atlantic Region
+c = CountyChoropleth$new(rep_votes)
+c$title = "Change from Romney to Trump (Red = Better Trump) - Mid-Atlantic"
+c$add_state_outline = TRUE
+c$legend = "Change in Votes"
+c$set_num_colors(6)
+c$ggplot_scale = scale_fill_manual(values = c("red","darkred","lightpink","blue","navy","deepskyblue"))
+c$set_zoom(c("new york", "pennsylvania", "new jersey", "maryland","delaware"))
+rep_change_MA = c$render() + 
+              theme(legend.position = "right")
+rep_change_MA
+
+##South East Region
+c = CountyChoropleth$new(rep_votes)
+c$title = "Change from Romney to Trump (Red = Better Trump) - South East"
+c$add_state_outline = TRUE
+c$legend = "Change in Votes"
+c$set_num_colors(6)
+c$ggplot_scale = scale_fill_manual(values = c("red","darkred","lightpink","blue","navy","deepskyblue"))
+c$set_zoom(c("west virginia","virginia","tennessee","kentucky","north carolina","south carolina","georgia","florida","arkansas","mississippi","alabama","louisiana"))
+rep_change_SE = c$render() + 
+              theme(legend.position = "right")
+rep_change_SE
+
+##Mid West Region
+c = CountyChoropleth$new(rep_votes)
+c$title = "Change from Romney to Trump (Red = Better Trump) - Mid West"
+c$add_state_outline = TRUE
+c$legend = "Change in Votes"
+c$set_num_colors(6)
+c$ggplot_scale = scale_fill_manual(values = c("red","darkred","lightpink","blue","navy","deepskyblue"))
+c$set_zoom(c("ohio","michigan","indiana","illinois","wisconsin","minnesota","iowa","missouri","north dakota","south dakota","nebraska","kansas"))
+rep_change_MW = c$render() + 
+              theme(legend.position = "right")
+rep_change_MW
+
+##South West Region
+c = CountyChoropleth$new(rep_votes)
+c$title = "Change from Romney to Trump (Red = Better Trump) - South West"
+c$add_state_outline = TRUE
+c$legend = "Change in Votes"
+c$set_num_colors(6)
+c$ggplot_scale = scale_fill_manual(values = c("red","darkred","lightpink","blue","navy","deepskyblue"))
+c$set_zoom(c("texas","oklahoma","new mexico","arizona"))
+rep_change_SW = c$render() + 
+              theme(legend.position = "right")
+rep_change_SW
+
+##West Region
+c = CountyChoropleth$new(rep_votes)
+c$title = "Change from Romney to Trump (Red = Better Trump) - West"
+c$add_state_outline = TRUE
+c$legend = "Change in Votes"
+c$set_num_colors(7)
+c$ggplot_scale = scale_fill_manual(values = c("white","red","darkred","lightpink","blue","navy","deepskyblue"))
+c$set_zoom(c("colorado","wyoming","montana","idaho","utah","nevada","california","oregon","washington","alaska","hawaii"))
+rep_change_W = c$render() + 
+              theme(legend.position = "right")
+rep_change_W
+
+#Explore Vote Count by Swing States
+c = CountyChoropleth$new(rep_votes)
+c$title = "Change from Romney to Trump (Red = Better Trump) - Swing States"
+c$add_state_outline = TRUE
+c$legend = "Change in Votes"
+c$set_num_colors(7)
+c$ggplot_scale = scale_fill_manual(values = c("white","red","darkred","lightpink","blue","navy","deepskyblue"))
+c$set_zoom(c("new hampshire","pennsylvania","ohio","michigan","north carolina","florida","arizona","iowa","nevada","wisconsin","virginia","colorado","minnesota","maine"))
+rep_change_swing = c$render() + 
+              theme(legend.position = "right")
+rep_change_swing
+```
+
+###Examine Wisconsin
+```{r examine Wisconsin}
+#Clinton
+c = CountyChoropleth$new(dem_votes)
+c$title = "Change from Obama to Clinton (Blue = Better Clinton) - Wisconsin"
+c$add_state_outline = TRUE
+c$legend = "Change in Votes"
+c$set_num_colors(4)
+c$ggplot_scale = scale_fill_manual(values = c("blue","red","darkred","lightpink"))
+c$set_zoom("wisconsin")
+dem_change_WI = c$render() + 
+              theme(legend.position = "right")
+dem_change_WI
+
+#Trump
+c = CountyChoropleth$new(rep_votes)
+c$title = "Change from Romney to Trump (Red = Better Trump) - Wisconsin"
+c$add_state_outline = TRUE
+c$legend = "Change in Votes"
+c$set_num_colors(5)
+c$ggplot_scale = scale_fill_manual(values = c("red","lightpink","blue","navy","deepskyblue"))
+c$set_zoom("wisconsin")
+rep_change_WI = c$render() + 
+              theme(legend.position = "right")
+rep_change_WI
+
+#Appear to be more significant losses for Clinton than gains for Trump
+```
+
+###Examine Texas
+```{r examine Texas}
+#Clinton
+c = CountyChoropleth$new(dem_votes)
+c$title = "Change from Obama to Clinton (Blue = Better Clinton) - Texas"
+c$add_state_outline = TRUE
+c$legend = "Change in Votes"
+c$set_num_colors(6)
+c$ggplot_scale = scale_fill_manual(values = c("white","blue","navy","deepskyblue","red","lightpink"))
+c$set_zoom("texas")
+dem_change_TX = c$render() + 
+              theme(legend.position = "right")
+dem_change_TX
+
+#Trump
+c = CountyChoropleth$new(rep_votes)
+c$title = "Change from Romney to Trump (Red = Better Trump) - Texas"
+c$add_state_outline = TRUE
+c$legend = "Change in Votes"
+c$set_num_colors(6)
+c$ggplot_scale = scale_fill_manual(values = c("red","darkred", "lightpink","blue","navy","deepskyblue"))
+c$set_zoom("texas")
+rep_change_TX = c$render() + 
+              theme(legend.position = "right")
+rep_change_TX
+```
+
+###Examine Arizona
+```{r examine Arizona}
+#Clinton
+c = CountyChoropleth$new(dem_votes)
+c$title = "Change from Obama to Clinton (Blue = Better Clinton) - Arizona"
+c$add_state_outline = TRUE
+c$legend = "Change in Votes"
+c$set_num_colors(5)
+c$ggplot_scale = scale_fill_manual(values = c("blue","navy","deepskyblue","red","lightpink"))
+c$set_zoom("arizona")
+dem_change_AZ = c$render() + 
+              theme(legend.position = "right")
+dem_change_AZ
+
+#Trump
+c = CountyChoropleth$new(rep_votes)
+c$title = "Change from Romney to Trump (Red = Better Trump) - Arizona"
+c$add_state_outline = TRUE
+c$legend = "Change in Votes"
+c$set_num_colors(5)
+c$ggplot_scale = scale_fill_manual(values = c("red","lightpink","blue","navy","deepskyblue"))
+c$set_zoom("arizona")
+rep_change_AZ = c$render() + 
+              theme(legend.position = "right")
+rep_change_AZ
+```
+
+###Percentage Shift from 2012
+```{r percentage shift from 2012 (Obama-Romney) to 2016 (Clinton-Trump)}
+votes$per_shift = votes$Trump_Romney - votes$Clinton_Obama
+
+shift = votes[,c(13,85)]
+
+summary(shift$per_shift)
+
+ggplot(shift,aes(x="distribution",y=per_shift)) + geom_boxplot(fill = "firebrick", colour = "darkblue") + ggtitle("County Shifts toward Republican from 2012 to 2016") + ylab("Percentage Shift toward Republican from 2012 to 2016")
+
+shift[,3] = NA
+colnames(shift) = c('region','shift','value')
+
+for(i in seq(1:dim(shift)[1])){
+  if(shift[i,2] > 0 && shift[i,2] < .05){
+    shift[i,3] = "GOP - Small (<5%)"
+  } else if(shift[i,2] > .05 && shift[i,2] < .10){
+    shift[i,3] = "GOP - Considerable (<10%)"
+  } else if(shift[i,2] >= .10){
+    shift[i,3] = "GOP - Large (>10%)"
+  } else if(shift[i,2] < 0 && shift[i,2] > -.05) {
+    shift[i,3] = "Dem - Small (<5%)"
+  } else if(shift[i,2] < -.05 && shift[i,2] > -.10){
+    shift[i,3] = "Dem - Considerable (<10%)"
+  } else if(shift[i,2] < -.10){
+    shift[i,3] = "Dem - Large (>10%)"
+  } else{
+  shift[i,3] = "Equal"
+  }
+}
+
+#Entire country
+c = CountyChoropleth$new(shift)
+c$title = "Shift from 2012 to 2016 by County Percentage"
+c$add_state_outline = TRUE
+c$legend = "Change in Votes"
+c$set_num_colors(6)
+c$ggplot_scale = scale_fill_manual(values = c("blue","navy","deepskyblue","red","darkred","lightpink"))
+per_change_US = c$render() + 
+              theme(legend.position = "right")
+per_change_US
+
+#Break down county vote into regions of the US for easier viewing
+
+##New England Region
+c = CountyChoropleth$new(shift)
+c$title = "Percentage Shift from 2012 to 2016 - New England"
+c$add_state_outline = TRUE
+c$legend = "Change in Votes"
+c$set_num_colors(6)
+c$ggplot_scale = scale_fill_manual(values = c("blue","navy","deepskyblue","red","darkred","lightpink"))
+c$set_zoom(c("maine","new hampshire", "vermont", "massachusetts","connecticut","rhode island"))
+per_change_NE = c$render() + 
+              theme(legend.position = "right")
+per_change_NE
+
+##Mid-Atlantic Region
+c = CountyChoropleth$new(shift)
+c$title = "Percentage Shift from 2012 to 2016 - Mid-Atlantic"
+c$add_state_outline = TRUE
+c$legend = "Change in Votes"
+c$set_num_colors(6)
+c$ggplot_scale = scale_fill_manual(values = c("blue","navy","deepskyblue","red","darkred","lightpink"))
+c$set_zoom(c("new york", "pennsylvania", "new jersey", "maryland","delaware"))
+per_change_MA = c$render() + 
+              theme(legend.position = "right")
+per_change_MA
+
+##South East Region
+c = CountyChoropleth$new(shift)
+c$title = "Percentage Shift from 2012 to 2016 - South East"
+c$add_state_outline = TRUE
+c$legend = "Change in Votes"
+c$set_num_colors(6)
+c$ggplot_scale = scale_fill_manual(values = c("blue","navy","deepskyblue","red","darkred","lightpink"))
+c$set_zoom(c("west virginia","virginia","tennessee","kentucky","north carolina","south carolina","georgia","florida","arkansas","mississippi","alabama","louisiana"))
+per_change_SE = c$render() + 
+              theme(legend.position = "right")
+per_change_SE
+
+##Mid West Region
+c = CountyChoropleth$new(shift)
+c$title = "Percentage Shift from 2012 to 2016 - Mid West"
+c$add_state_outline = TRUE
+c$legend = "Change in Votes"
+c$set_num_colors(6)
+c$ggplot_scale = scale_fill_manual(values = c("blue","navy","deepskyblue","red","darkred","lightpink"))
+c$set_zoom(c("ohio","michigan","indiana","illinois","wisconsin","minnesota","iowa","missouri","north dakota","south dakota","nebraska","kansas"))
+per_change_MW = c$render() + 
+              theme(legend.position = "right")
+per_change_MW
+
+##South West Region
+c = CountyChoropleth$new(shift)
+c$title = "Percentage Shift from 2012 to 2016 - South West"
+c$add_state_outline = TRUE
+c$legend = "Change in Votes"
+c$set_num_colors(6)
+c$ggplot_scale = scale_fill_manual(values = c("blue","navy","deepskyblue","red","darkred","lightpink"))
+c$set_zoom(c("texas","oklahoma","new mexico","arizona"))
+per_change_SW = c$render() + 
+              theme(legend.position = "right")
+per_change_SW
+
+##West Region
+c = CountyChoropleth$new(shift)
+c$title = "Percentage Shift from 2012 to 2016 - West"
+c$add_state_outline = TRUE
+c$legend = "Change in Votes"
+c$set_num_colors(6)
+c$ggplot_scale = scale_fill_manual(values = c("blue","navy","deepskyblue","red","darkred","lightpink"))
+c$set_zoom(c("colorado","wyoming","montana","idaho","utah","nevada","california","oregon","washington","alaska","hawaii"))
+per_change_W = c$render() + 
+              theme(legend.position = "right")
+per_change_W
+
+#Explore Vote Count by Swing States
+c = CountyChoropleth$new(shift)
+c$title = "Percentage Shift from 2012 to 2016 - Swing States"
+c$add_state_outline = TRUE
+c$legend = "Change in Votes"
+c$set_num_colors(6)
+c$ggplot_scale = scale_fill_manual(values = c("blue","navy","deepskyblue","red","darkred","lightpink"))
+c$set_zoom(c("new hampshire","pennsylvania","ohio","michigan","north carolina","florida","arizona","iowa","nevada","wisconsin","virginia","colorado","minnesota","maine"))
+per_change_swing = c$render() + 
+              theme(legend.position = "right")
+per_change_swing
+```
+
+###Analyze shifts at county level
+```{r County shifts analysis}
+total_shift = merge(x=dem_votes,y=rep_votes,by="region",all=TRUE)
+total_shift[,6] = NA
+colnames(total_shift) = c("region","dem_votes","dem_gain_loss","rep_votes","rep_gain_loss","value")
+
+for(i in seq(i:dim(total_shift)[1])){
+  if(total_shift[i,2] < 0){
+    if(total_shift[i,4] < 0){
+      total_shift[i,6] = "Dem Loss/GOP Loss"
+    } else if(total_shift[i,4] > 0) {
+      total_shift[i,6] = "Dem Loss/GOP Gain"
+    } else {
+      total_shift[i,6] = "Dem Loss/GOP Equal"
+    }
+  } else if(total_shift[i,2] > 0){
+    if(total_shift[i,4] < 0){
+      total_shift[i,6] = "Dem Gain/GOP Loss"
+    } else if(total_shift[i,4] > 0){
+      total_shift[i,6] = "Dem Gain/GOP Gain"
+    } else {
+      total_shift[i,6] = "Dem Gain/GOP Equal"
+    }
+  } else {
+    if(total_shift[i,4] < 0){
+      total_shift[i,6] = "Dem Equal/GOP Loss"
+    } else if(total_shift[i,4] > 0){
+      total_shift[i,6] = "Dem Equal/GOP Gain"
+    } else {
+      total_shift[i,6] = "Dem Equal/GOP Equal"
+    }
+  }
+}
+
+#Entire country
+c = CountyChoropleth$new(total_shift)
+c$title = "Shift from 2012 to 2016 by County Total Votes for Parties"
+c$add_state_outline = TRUE
+c$legend = "Change in Votes"
+c$set_num_colors(7)
+c$ggplot_scale = scale_fill_manual(values = c("lightpink", "deepskyblue","yellow","navy","grey","red","green"))
+shift_US = c$render() + 
+              theme(legend.position = "right")
+shift_US
+
+#Break down county vote into regions of the US for easier viewing
+
+#New England Region
+c = CountyChoropleth$new(total_shift)
+c$title = "Shift from 2012 to 2016 by County Total Votes - New England"
+c$add_state_outline = TRUE
+c$legend = "Change in Votes"
+c$set_num_colors(4)
+c$ggplot_scale = scale_fill_manual(values = c("yellow","navy","red","green"))
+c$set_zoom(c("maine","new hampshire", "vermont", "massachusetts","connecticut","rhode island"))
+shift_NE = c$render() + 
+              theme(legend.position = "right")
+shift_NE
+
+##Mid-Atlantic Region
+c = CountyChoropleth$new(total_shift)
+c$title = "Shift from 2012 to 2016 by County Total Votes - Mid-Atlantic"
+c$add_state_outline = TRUE
+c$legend = "Change in Votes"
+c$set_num_colors(4)
+c$ggplot_scale = scale_fill_manual(values = c("yellow","navy","red","green"))
+c$set_zoom(c("new york", "pennsylvania", "new jersey", "maryland","delaware"))
+shift_MA = c$render() + 
+              theme(legend.position = "right")
+shift_MA
+
+##South East Region
+c = CountyChoropleth$new(total_shift)
+c$title = "Shift from 2012 to 2016 by County Total Votes - South East"
+c$add_state_outline = TRUE
+c$legend = "Change in Votes"
+c$set_num_colors(5)
+c$ggplot_scale = scale_fill_manual(values = c("lightpink","yellow","navy","red","green"))
+c$set_zoom(c("west virginia","virginia","tennessee","kentucky","north carolina","south carolina","georgia","florida","arkansas","mississippi","alabama","louisiana"))
+shift_SE = c$render() + 
+              theme(legend.position = "right")
+shift_SE
+
+##Mid West Region
+c = CountyChoropleth$new(total_shift)
+c$title = "Shift from 2012 to 2016 by County Total Votes - Mid West"
+c$add_state_outline = TRUE
+c$legend = "Change in Votes"
+c$set_num_colors(4)
+c$ggplot_scale = scale_fill_manual(values = c("yellow","navy","red","green"))
+c$set_zoom(c("ohio","michigan","indiana","illinois","wisconsin","minnesota","iowa","missouri","north dakota","south dakota","nebraska","kansas"))
+shift_MW = c$render() + 
+              theme(legend.position = "right")
+shift_MW
+
+##South West Region
+c = CountyChoropleth$new(total_shift)
+c$title = "Shift from 2012 to 2016 by County Total Votes - South West"
+c$add_state_outline = TRUE
+c$legend = "Change in Votes"
+c$set_num_colors(5)
+c$ggplot_scale = scale_fill_manual(values = c("lightpink","yellow","navy","red","green"))
+c$set_zoom(c("texas","oklahoma","new mexico","arizona"))
+shift_SW = c$render() + 
+              theme(legend.position = "right")
+shift_SW
+
+##West Region
+c = CountyChoropleth$new(total_shift)
+c$title = "Shift from 2012 to 2016 by County Total Votes - West"
+c$add_state_outline = TRUE
+c$legend = "Change in Votes"
+c$set_num_colors(6)
+c$ggplot_scale = scale_fill_manual(values = c("lightpink","yellow","navy","grey","red","green"))
+c$set_zoom(c("colorado","wyoming","montana","idaho","utah","nevada","california","oregon","washington","alaska","hawaii"))
+shift_W = c$render() + 
+              theme(legend.position = "right")
+shift_W
+
+#Explore Vote Count by Swing States
+c = CountyChoropleth$new(total_shift)
+c$title = "Shift from 2012 to 2016 by County Total Votes - Swing States"
+c$add_state_outline = TRUE
+c$legend = "Change in Votes"
+c$set_num_colors(5)
+c$ggplot_scale = scale_fill_manual(values = c("yellow","navy","lightpink","red","green"))
+c$set_zoom(c("new hampshire","pennsylvania","ohio","michigan","north carolina","florida","arizona","iowa","nevada","wisconsin","virginia","colorado","minnesota","maine"))
+shift_swing = c$render() + 
+              theme(legend.position = "right")
+shift_swing
+```
+
+###Vote Share at State Level
+```{r state level vote}
+#create empty vector to store the state fips values
+state_levels = vector()
+
+#store unique fips in vector
+for(i in seq(i:dim(votes)[1])){
+  if(!is.element(votes[i,18],state_levels)){
+    state_levels = c(state_levels,votes[i,18])
+  }
+}
+
+#create dataframe, add state_levels to it, rename it to "fips.numeric" in order to join with state.regions data to get the region names
+states = data.frame(state_levels)
+states[,c(2:9)] = 0
+colnames(states)[1] = "fips.numeric"
+
+#read in data, merge, drop duplicate column, and rename columns
+data(state.regions)
+states = merge(x=states,y=state.regions,by="fips.numeric")
+states = states[,c(1:11)]
+colnames(states) = c("fips", "dem_votes_2016", "gop_votes_2016", "total_votes_2016", "dem_votes_2012", "gop_votes_2012", "total_votes_2012","pop_2010","pop_2014","region","abb")
+
+for(i in seq(1:dim(votes)[1])){
+  for(j in seq(1:dim(states)[1])){
+    if(votes[i,11] == states[j,11]){
+      states[j,2] = states[j,2] + votes[i,4]
+      states[j,3] = states[j,3] + votes[i,5]
+      states[j,4] = states[j,4] + votes[i,6]
+      states[j,5] = states[j,5] + votes[i,15]
+      states[j,6] = states[j,6] + votes[i,16]
+      states[j,7] = states[j,7] + votes[i,14]
+      states[j,8] = states[j,8] + votes[i,27]
+      states[j,9] = states[j,9] + votes[i,26]
+    }
+  }
+}
+
+#Plot Voter Participation Changes
+states$participation_change = states$total_votes_2016 - states$total_votes_2012
+
+voting_num = states[,c(10,12)]
+colnames(voting_num) = c("region","value")
+
+ggplot(voting_num,aes(x="distribution",y=value)) + geom_boxplot(fill = "firebrick", colour = "darkblue") + ggtitle("County Shifts in Total Votes Cast from 2012 to 2016") + ylab("Total Number of Votes Cast Change")
+
+c = StateChoropleth$new(voting_num)
+c$title = "Shift from 2012 to 2016 by Total Number of Votes Cast"
+c$add_state_outline = TRUE
+c$legend = "Change in Votes Cast"
+c$set_num_colors(1)
+vote_US = c$render() + 
+              theme(legend.position = "right")
+vote_US
+
+states$pop_2012 = states$pop_2010 + (states$pop_2014 - states$pop_2010)
+
+states$pop_2016 = states$pop_2014 + (states$pop_2014 - states$pop_2010)
+
+states$per_vot_change = 100 * ((states$total_votes_2016/states$pop_2016) - (states$total_votes_2012/states$pop_2012))
+
+per_vote_num = states[,c(10,15)]
+colnames(per_vote_num)= c("region","value")
+
+
+c = StateChoropleth$new(per_vote_num)
+c$title = "Shift in Turnout from 2012 to 2016 by Estimated Population Size"
+c$add_state_outline = TRUE
+c$legend = "% Change in Votes Cast"
+c$set_num_colors(8)
+c$ggplot_scale = scale_fill_manual(values = c("navy","blue","lightblue","white", "lightpink", "red", "firebrick","darkred"))
+per_vote_US = c$render() + 
+              theme(legend.position = "right")
+per_vote_US
+
+
+#Results
+states$DT_per = states$gop_votes_2016/states$total_votes_2016
+
+states$HC_per = states$dem_votes_2016/states$total_votes_2016
+
+states$third = (1 - states$DT_per - states$HC_per) * 100
+
+states$DT_margin = (states$DT_per - states$HC_per) * 100
+
+ggplot(states,aes(x="distribution",y=DT_margin)) + geom_boxplot(fill = "firebrick", colour = "darkblue") + ggtitle("% Donald Trump Won Per State") + ylab("Donald Trump %")
+
+states$winner = NA
+
+for(i in seq(1:dim(states)[1])){
+  if(states[i,19] < -10){
+    states[i,20] = "Clinton (>10%)"
+  } 
+  if(states[i,19] > -10 && states[i,19] < -5){
+    states[i,20] = "Clinton (5% - 10%)"
+  }
+  if(states[i,19] > -5 && states[i,19] < -2){
+    states[i,20] = "Clinton (2% - 5%)"
+  } 
+  if(states[i,19] > -2 && states[i,19] < 0){
+    states[i,20] = "Clinton (<2%)"
+  } 
+  if(states[i,19] > 10){
+    states[i,20] = "Trump (>10%)"
+  } 
+  if(states[i,19] < 10 && states[i,19] > 5){
+    states[i,20] = "Trump (5% - 10%)"
+  } 
+  if(states[i,19] < 5 && states[i,19] > 2){
+    states[i,20] = "Trump (2% - 5%)"
+  } 
+  if(states[i,19] < 2 && states[i,19] > 0){
+    states[i,20] = "Trump (<2%)"
+  } 
+}
+
+state_winner = states[,c(10,20)]
+colnames(state_winner) = c("region","value")
+
+c = StateChoropleth$new(state_winner)
+c$title = "2016 State Winner Margin"
+c$add_state_outline = TRUE
+c$legend = "Win Margin %"
+c$set_num_colors(8)
+c$ggplot_scale = scale_fill_manual(values = c("lightblue","navy", "dodgerblue1","blue",  "lightpink", "firebrick","red", "darkred"))
+winner_US = c$render() + 
+              theme(legend.position = "right")
+winner_US
+
+#Third Party Vote
+ggplot(states,aes(x="distribution",y=third)) + geom_boxplot(fill = "firebrick", colour = "darkblue") + ggtitle("% Third Party Per State") + ylab("Third Party Voting Percent per State")
+
+
+state_third = states[,c(10,18)]
+
+state_third$category = NA
+
+for(i in seq(1:dim(state_third)[1])){
+  if(state_third[i,2] < 3){
+    state_third[i,3] = "< 3%"
+  }
+  if(state_third[i,2] > 3 && state_third[i,2] < 5){
+    state_third[i,3] = "3% - 5%"
+  }
+  if(state_third[i,2] > 5 && state_third[i,2] < 7){
+    state_third[i,3] = "5% - 7%"
+  }
+  if(state_third[i,2] > 7 && state_third[i,2] < 10){
+    state_third[i,3] = "7% - 10%"
+  }
+  if(state_third[i,2] > 10 && state_third[i,2] < 15){
+    state_third[i,3] = "10% - 15%"
+  }
+  if(state_third[i,2] > 15){
+    state_third[i,3] = "> 15%"
+  }
+}
+
+colnames(state_third) = c("region","third", "value")
+
+c = StateChoropleth$new(state_third)
+c$title = "2016 Third Party Vote by State"
+c$add_state_outline = TRUE
+c$legend = "Third Party %"
+c$set_num_colors(6)
+c$ggplot_scale = scale_fill_manual(values = c("purple", "red","orange","blue", "green","yellow"))
+state_third_US = c$render() + 
+              theme(legend.position = "right")
+state_third_US
+```
+
+###Examine County Level Winner
+```{r Examine County Level Winner}
+county_winner = votes[,c(7,8,13)]
+
+county_winner$Trump_margin = (county_winner$Trump - county_winner$Clinton) * 100
+
+
+for(i in seq(1:dim(county_winner)[1])){
+  if(county_winner[i,4] < -10){
+    county_winner[i,5] = "Clinton (>10%)"
+  } 
+  if(county_winner[i,4] > -10 && county_winner[i,4] < -5){
+    county_winner[i,5] = "Clinton (5% - 10%)"
+  }
+  if(county_winner[i,4] > -5 && county_winner[i,4] < -2){
+    county_winner[i,5] = "Clinton (2% - 5%)"
+  } 
+  if(county_winner[i,4] > -2 && county_winner[i,4] < 0){
+    county_winner[i,5] = "Clinton (<2%)"
+  } 
+  if(county_winner[i,4] > 10){
+    county_winner[i,5] = "Trump (>10%)"
+  } 
+  if(county_winner[i,4] < 10 && county_winner[i,4] > 5){
+    county_winner[i,5] = "Trump (5% - 10%)"
+  } 
+  if(county_winner[i,4] < 5 && county_winner[i,4] > 2){
+    county_winner[i,5] = "Trump (2% - 5%)"
+  } 
+  if(county_winner[i,4] < 2 && county_winner[i,4] > 0){
+    county_winner[i,5] = "Trump (<2%)"
+  } 
+}
+
+
+colnames(county_winner)[3] = "region"
+colnames(county_winner)[5] = "value"
+
+plot(density(county_winner[,4]), 
+         main = "Trump County Margin Density Plot",
+         ylab = "density")
+
+c = CountyChoropleth$new(county_winner)
+c$title = "County Winner Margin %"
+c$add_state_outline = TRUE
+c$legend = "County Winner Margin"
+c$set_num_colors(8)
+c$ggplot_scale = scale_fill_manual(values = c("lightblue","navy", "dodgerblue1","blue",  "lightpink", "darkred","red", "firebrick"))
+county_US = c$render() + 
+              theme(legend.position = "right")
+county_US
+
+#Break Down By Region for Easy Viewing
+
+#New England
+c = CountyChoropleth$new(county_winner)
+c$title = "County Winner Margin % - New England"
+c$add_state_outline = TRUE
+c$legend = "County Winner Margin"
+c$set_num_colors(8)
+c$ggplot_scale = scale_fill_manual(values = c("lightblue","navy", "dodgerblue1","blue",  "lightpink", "darkred","red", "firebrick"))
+c$set_zoom(c("maine","new hampshire", "vermont", "massachusetts","connecticut","rhode island"))
+county_NE = c$render() + 
+              theme(legend.position = "right")
+county_NE
+
+##Mid-Atlantic Region
+c = CountyChoropleth$new(county_winner)
+c$title = "County Winner Margin % - Mid-Atlantic"
+c$add_state_outline = TRUE
+c$legend = "County Winner Margin"
+c$set_num_colors(8)
+c$ggplot_scale = scale_fill_manual(values = c("lightblue","navy", "dodgerblue1","blue",  "lightpink", "darkred","red", "firebrick"))
+c$set_zoom(c("new york", "pennsylvania", "new jersey", "maryland","delaware"))
+county_MA = c$render() + 
+              theme(legend.position = "right")
+county_MA
+
+
+##South East Region
+c = CountyChoropleth$new(county_winner)
+c$title = "County Winner Margin % - South East"
+c$add_state_outline = TRUE
+c$legend = "County Winner Margin"
+c$set_num_colors(8)
+c$ggplot_scale = scale_fill_manual(values = c("lightblue","navy", "dodgerblue1","blue",  "lightpink", "darkred","red", "firebrick"))
+c$set_zoom(c("west virginia","virginia","tennessee","kentucky","north carolina","south carolina","georgia","florida","arkansas","mississippi","alabama","louisiana"))
+county_SE = c$render() + 
+              theme(legend.position = "right")
+county_SE
+
+##Mid West Region
+c = CountyChoropleth$new(county_winner)
+c$title = "County Winner Margin % - Mid West"
+c$add_state_outline = TRUE
+c$legend = "County Winner Margin"
+c$set_num_colors(8)
+c$ggplot_scale = scale_fill_manual(values = c("lightblue","navy", "dodgerblue1","blue",  "lightpink", "darkred","red", "firebrick"))
+c$set_zoom(c("ohio","michigan","indiana","illinois","wisconsin","minnesota","iowa","missouri","north dakota","south dakota","nebraska","kansas"))
+county_MW = c$render() + 
+              theme(legend.position = "right")
+county_MW
+
+##South West Region
+c = CountyChoropleth$new(county_winner)
+c$title = "County Winner Margin % - South West"
+c$add_state_outline = TRUE
+c$legend = "County Winner Margin"
+c$set_num_colors(8)
+c$ggplot_scale = scale_fill_manual(values = c("navy", "dodgerblue1","blue",  "lightpink", "darkred","red", "firebrick"))
+c$set_zoom(c("texas","oklahoma","new mexico","arizona"))
+county_SW = c$render() + 
+              theme(legend.position = "right")
+county_SW
+
+##West Region
+c = CountyChoropleth$new(county_winner)
+c$title = "County Winner Margin % - West"
+c$add_state_outline = TRUE
+c$legend = "County Winner Margin"
+c$set_num_colors(8)
+c$ggplot_scale = scale_fill_manual(values = c("lightblue","navy", "dodgerblue1","blue",  "lightpink", "darkred","red", "firebrick"))
+c$set_zoom(c("colorado","wyoming","montana","idaho","utah","nevada","california","oregon","washington","alaska","hawaii"))
+county_W = c$render() + 
+              theme(legend.position = "right")
+county_W
+
+#Explore Vote Count by Swing States
+c = CountyChoropleth$new(county_winner)
+c$title = "County Winner Margin % - Swing States"
+c$add_state_outline = TRUE
+c$legend = "County Winner Margin"
+c$set_num_colors(8)
+c$ggplot_scale = scale_fill_manual(values = c("lightblue","navy", "dodgerblue1","blue",  "lightpink", "darkred","red", "firebrick"))
+c$set_zoom(c("new hampshire","pennsylvania","ohio","michigan","north carolina","florida","arizona","iowa","nevada","wisconsin","virginia","colorado","minnesota","maine"))
+county_swing = c$render() + 
+              theme(legend.position = "right")
+county_swing
+```
+
+###Analyze Counties that Flipped 2012 to 2016
+```{r County Flips}
+votes$flips = NA
+
+for(i in seq(1:dim(votes)[1])){
+  if(votes[i,8] > votes[i,7] && votes[i,19] > votes[i,20]){
+    votes[i,86] = "OBAMA to TRUMP"
+  } else if(votes[i,8] < votes[i,7] && votes[i,19] < votes[i,20]){
+    votes[i,86] = "ROMNEY to CLINTON"
+  } else {
+    votes[i,86] = "Solid County"
+  }
+}
+
+flips = votes[,c(13,86)]
+colnames(flips) = c("region","value")
+
+c = CountyChoropleth$new(flips)
+c$title = "County Flips from 2012 to 2016"
+c$add_state_outline = TRUE
+c$legend = "County Status"
+c$set_num_colors(3)
+c$ggplot_scale = scale_fill_manual(values = c("red","blue","white"))
+county_flips = c$render() + 
+              theme(legend.position = "right")
+county_flips
+
+#Number of Clinton Flips
+length(which(votes$flips == "ROMNEY to CLINTON"))
+
+#Number of Trump Flips
+length(which(votes$flips == "OBAMA to TRUMP"))
+
+#Number of counties that did not change
+length(which(votes$flips == "Solid County"))
+```
+
+##Exploratory Analysis - Features
+
+
+
+```{r Analysis}
+votes$fips = as.factor(votes$fips)
+votes$FIPS = as.factor(votes$FIPS)
+votes$state_fips = as.factor(votes$state_fips)
+votes$state_abbr = as.factor(votes$state_abbr)
+votes$state_abbreviation = as.factor(votes$state_abbreviation)
+votes$area_name = as.factor(votes$area_name)
+```
