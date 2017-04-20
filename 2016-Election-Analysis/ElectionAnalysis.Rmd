@@ -15,9 +15,15 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-##Read In File
+##Read In Files and Clean
 ```{r read vote file in}
-votes = read.csv("C:/Users/Scott/desktop/2012-and-2016-presidential-elections/votes.csv", header=T)
+votes = read.csv("C:/Users/onest/desktop/2012-and-2016-presidential-elections/votes.csv", header=T)
+
+religion = read.csv("C:/Users/onest/desktop/2012-and-2016-presidential-elections/religion.csv", header=T)
+religions = religion[,c(1,43,44,45,46,47,48,49,50,51,52,53,54,55)]
+colnames(religions) = c("FIPS", "Total_Pop", "Evangelical", "Protestant", "Historically_Black", "Catholic", "Jewish", "Mormon", "Islamic", "Hindu", "Buddhist", "Orthodox", "Jehovas_Witnesses", "Other_Religion")
+
+votes = merge(x=votes,y=religions,by="FIPS", all.x=T)
 ```
 
 ##Exploratory Analaysis - Maps
@@ -34,8 +40,8 @@ library("choroplethrMaps")
 library("ggplot2")
 
 #Explore total votes per county
-total_votes = votes[,c(6,13)]
-colnames(total_votes) = c('value','region')
+total_votes = votes[,c(1,7)]
+colnames(total_votes) = c('region','value')
 
 vote_count = county_choropleth(total_votes,
                                legend = "Votes",
@@ -108,7 +114,7 @@ vote_count_swing
 ```{r change in total number of democratic votes from Obama to Clinton}
 votes$change_dem_votes = votes$votes_dem_2016 - votes$votes_dem_2012
 
-dem_votes = votes[,c(13,83)]
+dem_votes = votes[,c(1,96)]
 dem_votes[,3] = NA
 colnames(dem_votes) = c('region','votes','value')
 
@@ -231,7 +237,7 @@ dem_change_swing
 ```{r change in total number of republican votes from Romney to Trump}
 votes$change_rep_votes = votes$votes_gop_2016 - votes$votes_gop_2012
 
-rep_votes = votes[,c(13,84)]
+rep_votes = votes[,c(1,97)]
 rep_votes[,3] = NA
 colnames(rep_votes) = c('region','votes','value')
 
@@ -437,7 +443,7 @@ rep_change_AZ
 ```{r percentage shift from 2012 (Obama-Romney) to 2016 (Clinton-Trump)}
 votes$per_shift = votes$Trump_Romney - votes$Clinton_Obama
 
-shift = votes[,c(13,85)]
+shift = votes[,c(1,98)]
 
 summary(shift$per_shift)
 
@@ -719,10 +725,10 @@ colnames(states) = c("fips", "dem_votes_2016", "gop_votes_2016", "total_votes_20
 
 for(i in seq(1:dim(votes)[1])){
   for(j in seq(1:dim(states)[1])){
-    if(votes[i,11] == states[j,11]){
-      states[j,2] = states[j,2] + votes[i,4]
-      states[j,3] = states[j,3] + votes[i,5]
-      states[j,4] = states[j,4] + votes[i,6]
+    if(votes[i,12] == states[j,11]){
+      states[j,2] = states[j,2] + votes[i,5]
+      states[j,3] = states[j,3] + votes[i,6]
+      states[j,4] = states[j,4] + votes[i,7]
       states[j,5] = states[j,5] + votes[i,15]
       states[j,6] = states[j,6] + votes[i,16]
       states[j,7] = states[j,7] + votes[i,14]
@@ -867,7 +873,7 @@ state_third_US
 
 ###Examine County Level Winner
 ```{r Examine County Level Winner}
-county_winner = votes[,c(7,8,13)]
+county_winner = votes[,c(1,8,9)]
 
 county_winner$Trump_margin = (county_winner$Trump - county_winner$Clinton) * 100
 
@@ -900,7 +906,7 @@ for(i in seq(1:dim(county_winner)[1])){
 }
 
 
-colnames(county_winner)[3] = "region"
+colnames(county_winner)[1] = "region"
 colnames(county_winner)[5] = "value"
 
 plot(density(county_winner[,4]), 
@@ -1010,16 +1016,16 @@ county_swing
 votes$flips = NA
 
 for(i in seq(1:dim(votes)[1])){
-  if(votes[i,8] > votes[i,7] && votes[i,19] > votes[i,20]){
-    votes[i,86] = "OBAMA to TRUMP"
-  } else if(votes[i,8] < votes[i,7] && votes[i,19] < votes[i,20]){
-    votes[i,86] = "ROMNEY to CLINTON"
+  if(votes[i,9] > votes[i,8] && votes[i,19] > votes[i,20]){
+    votes[i,99] = "OBAMA to TRUMP"
+  } else if(votes[i,9] < votes[i,8] && votes[i,19] < votes[i,20]){
+    votes[i,99] = "ROMNEY to CLINTON"
   } else {
-    votes[i,86] = "Solid County"
+    votes[i,99] = "Solid County"
   }
 }
 
-flips = votes[,c(13,86)]
+flips = votes[,c(1,99)]
 colnames(flips) = c("region","value")
 
 c = CountyChoropleth$new(flips)
@@ -1042,15 +1048,91 @@ length(which(votes$flips == "OBAMA to TRUMP"))
 length(which(votes$flips == "Solid County"))
 ```
 
-##Exploratory Analysis - Features
+##Exploratory Analysis - Religion
 
 
-
+###Explore religious variables
 ```{r Analysis}
-votes$fips = as.factor(votes$fips)
-votes$FIPS = as.factor(votes$FIPS)
-votes$state_fips = as.factor(votes$state_fips)
-votes$state_abbr = as.factor(votes$state_abbr)
-votes$state_abbreviation = as.factor(votes$state_abbreviation)
-votes$area_name = as.factor(votes$area_name)
+#total religious population
+religious = votes[,c(1,83)]
+colnames(religious) = c("region","value")
+
+c= CountyChoropleth$new(religious)
+c$title = "Total Religious Population"
+c$add_state_outline = TRUE
+c$legend = "Religious Percentage"
+county_religious = c$render() + theme(legend.position = "right")
+county_religious
+
+#Evangelical Population
+evangelical = votes[,c(1,84)]
+colnames(evangelical) = c("region","value")
+evangelical$value = cut(evangelical$value, breaks = c(0,1,5,10,20,Inf))
+
+c= CountyChoropleth$new(evangelical)
+c$title = "Evangelical Population"
+c$add_state_outline = TRUE
+c$set_num_colors(5)
+c$ggplot_scale = scale_fill_manual(values = c("white","darkseagreen1", "greenyellow","green",  "darkgreen"))
+c$legend = "Evangelical Percentage"
+county_evangelical = c$render() + theme(legend.position = "right")
+county_evangelical
+
+#Catholic Population
+catholic = votes[,c(1,87)]
+colnames(catholic) = c("region","value")
+catholic$value = cut(catholic$value, breaks = c(0,1,5,10,20,Inf))
+
+c= CountyChoropleth$new(catholic)
+c$title = "Catholic Population"
+c$add_state_outline = TRUE
+c$set_num_colors(5)
+c$ggplot_scale = scale_fill_manual(values = c("white","thistle1", "plum3","purple",  "purple4"))
+c$legend = "Catholic Percentage"
+county_catholic = c$render() + theme(legend.position = "right")
+county_catholic
+
+#Mormon Population
+mormon = votes[,c(1,89)]
+colnames(mormon) = c("region","value")
+mormon$value = cut(mormon$value, breaks = c(0,1,5,10,20,Inf))
+
+c= CountyChoropleth$new(mormon)
+c$title = "Mormon Population"
+c$add_state_outline = TRUE
+c$legend = "Mormon Percentage"
+c$set_num_colors(5)
+c$ggplot_scale = scale_fill_manual(values = c("white","lightpink", "lightpink3","firebrick1",  "firebrick4"))
+county_mormon = c$render() + theme(legend.position = "right")
+county_mormon
+
+#Jewish Population
+jewish = votes[,c(1,88)]
+colnames(jewish) = c("region","value")
+jewish$value = cut(jewish$value, breaks = c(0,1,2,5,10,Inf))
+
+c= CountyChoropleth$new(jewish)
+c$title = "Jewish Population"
+c$add_state_outline = TRUE
+c$legend = "Jewish Percentage"
+c$set_num_colors(5)
+c$ggplot_scale = scale_fill_manual(values = c("white","cyan", "cyan3","blue",  "darkblue"))
+county_jewish = c$render() + theme(legend.position = "right")
+county_jewish
+
+#Total Christian Population
+votes$Christian = votes$Evangelical + votes$Protestant + votes$Catholic + votes$Historically_Black + votes$Orthodox
+christian = votes[,c(1,100)]
+colnames(christian) = c("region","value")
+christian$value = cut(christian$value, breaks = c(0,10,20,30,40,50,60,70,Inf))
+
+
+c= CountyChoropleth$new(christian)
+c$title = "Christian Population"
+c$add_state_outline = TRUE
+c$set_num_colors(8)
+c$ggplot_scale = scale_fill_manual(values = c("white","yellow", "salmon","springgreen","brown1", "deepskyblue", "darkmagenta", "darkblue"))
+c$legend = "Christian Percentage"
+county_christian = c$render() + theme(legend.position = "right")
+county_christian
 ```
