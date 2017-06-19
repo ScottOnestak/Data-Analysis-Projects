@@ -16,7 +16,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ##Read In Files and Clean
-```{r read vote file in}
+```{r read vote file in, cache=TRUE}
 votes = read.csv("C:/Users/onest/desktop/2012-and-2016-presidential-elections/votes.csv", header=T)
 
 religion = read.csv("C:/Users/onest/desktop/2012-and-2016-presidential-elections/religion.csv", header=T)
@@ -29,12 +29,12 @@ votes = merge(x=votes,y=religions,by="FIPS", all.x=T)
 ##Exploratory Analaysis - Maps
 
 ###Basics
-```{r basic data understanding}
+```{r basic data understanding, cache=TRUE}
 colnames(votes)
 ```
 
 ###Vote Share Plots
-```{r voter share plots}
+```{r voter share plots, cache=TRUE}
 library("choroplethr")
 library("choroplethrMaps")
 library("ggplot2")
@@ -111,7 +111,7 @@ vote_count_swing
 ```
 
 ###Obama to Clinton (2012 to 2016 Change)
-```{r change in total number of democratic votes from Obama to Clinton}
+```{r change in total number of democratic votes from Obama to Clinton, cache=TRUE}
 votes$change_dem_votes = votes$votes_dem_2016 - votes$votes_dem_2012
 
 dem_votes = votes[,c(1,96)]
@@ -234,7 +234,7 @@ dem_change_swing
 ```
 
 ###Romney to Trump (2012 to 2016 Change)
-```{r change in total number of republican votes from Romney to Trump}
+```{r change in total number of republican votes from Romney to Trump, cache=TRUE}
 votes$change_rep_votes = votes$votes_gop_2016 - votes$votes_gop_2012
 
 rep_votes = votes[,c(1,97)]
@@ -357,7 +357,7 @@ rep_change_swing
 ```
 
 ###Examine Wisconsin
-```{r examine Wisconsin}
+```{r examine Wisconsin, cache=TRUE}
 #Clinton
 c = CountyChoropleth$new(dem_votes)
 c$title = "Change from Obama to Clinton (Blue = Better Clinton) - Wisconsin"
@@ -386,7 +386,7 @@ rep_change_WI
 ```
 
 ###Examine Texas
-```{r examine Texas}
+```{r examine Texas,cache=TRUE}
 #Clinton
 c = CountyChoropleth$new(dem_votes)
 c$title = "Change from Obama to Clinton (Blue = Better Clinton) - Texas"
@@ -413,7 +413,7 @@ rep_change_TX
 ```
 
 ###Examine Arizona
-```{r examine Arizona}
+```{r examine Arizona, cache=TRUE}
 #Clinton
 c = CountyChoropleth$new(dem_votes)
 c$title = "Change from Obama to Clinton (Blue = Better Clinton) - Arizona"
@@ -440,7 +440,7 @@ rep_change_AZ
 ```
 
 ###Percentage Shift from 2012
-```{r percentage shift from 2012 (Obama-Romney) to 2016 (Clinton-Trump)}
+```{r percentage shift from 2012 (Obama-Romney) to 2016 (Clinton-Trump),cache=TRUE}
 votes$per_shift = votes$Trump_Romney - votes$Clinton_Obama
 
 shift = votes[,c(1,98)]
@@ -569,7 +569,7 @@ per_change_swing
 ```
 
 ###Analyze shifts at county level
-```{r County shifts analysis}
+```{r County shifts analysis,cache=TRUE}
 total_shift = merge(x=dem_votes,y=rep_votes,by="region",all=TRUE)
 total_shift[,6] = NA
 colnames(total_shift) = c("region","dem_votes","dem_gain_loss","rep_votes","rep_gain_loss","value")
@@ -701,7 +701,7 @@ shift_swing
 ```
 
 ###Vote Share at State Level
-```{r state level vote}
+```{r state level vote,cache=TRUE}
 #create empty vector to store the state fips values
 state_levels = vector()
 
@@ -872,7 +872,7 @@ state_third_US
 ```
 
 ###Examine County Level Winner
-```{r Examine County Level Winner}
+```{r Examine County Level Winner,cache=TRUE}
 county_winner = votes[,c(1,8,9)]
 
 county_winner$Trump_margin = (county_winner$Trump - county_winner$Clinton) * 100
@@ -1012,7 +1012,7 @@ county_swing
 ```
 
 ###Analyze Counties that Flipped 2012 to 2016
-```{r County Flips}
+```{r County Flips,cache=TRUE}
 votes$flips = NA
 
 for(i in seq(1:dim(votes)[1])){
@@ -1052,7 +1052,7 @@ length(which(votes$flips == "Solid County"))
 
 
 ###Explore religious variables
-```{r Analysis}
+```{r Analysis,cache=TRUE}
 #total religious population
 religious = votes[,c(1,83)]
 colnames(religious) = c("region","value")
@@ -1135,4 +1135,267 @@ c$ggplot_scale = scale_fill_manual(values = c("white","yellow", "salmon","spring
 c$legend = "Christian Percentage"
 county_christian = c$render() + theme(legend.position = "right")
 county_christian
+```
+
+##Model Construction
+
+###Prepare Data for Modeling
+```{r Prepare Data for Modeling,cache=TRUE}
+#change decimals to match the other percentage values
+votes$Trump = votes$Trump * 100
+votes$Clinton = votes$Clinton * 100
+votes$Obama = votes$Obama * 100
+votes$Romney = votes$Romney * 100
+votes$White = votes$White * 100
+votes$Black = votes$Black * 100
+votes$Hispanic = votes$Hispanic * 100
+votes$Clinton_Obama = votes$Clinton_Obama * 100
+votes$Trump_Romney = votes$Trump_Romney * 100
+votes$per_shift = votes$per_shift * 100
+
+```
+
+###Predict Clinton-Obama Deviation
+```{r Clinton-Obama Deviation, results="hide",cache=TRUE}
+CO_Dev_Predict = votes[,c(14:16,19,20,26:28,30:35,40,42:63,67:77,83:95,100)]
+
+CO_Dev_Predict = na.omit(CO_Dev_Predict)
+
+null_CO = lm(Clinton_Obama~1,data = CO_Dev_Predict)
+full_CO = lm(Clinton_Obama~.,data = CO_Dev_Predict)
+
+CO_Dev = step(null_CO,scope=list(upper=full_CO),data=CO_Dev_Predict,direction="both")
+
+votes$CO_Dev_Pred = predict(CO_Dev,votes)
+```
+
+###Predict Trump-Romney Deviation
+```{r Trump-Romney Deviation, results="hide",cache=TRUE}
+TR_Dev_Predict =  votes[,c(14:16,19,20,26:28,30:35,40,42:63,67:76,78,83:95,100)]
+
+TR_Dev_Predict = na.omit(TR_Dev_Predict)
+
+null_TR = lm(Trump_Romney~1, data = TR_Dev_Predict)
+full_TR = lm(Trump_Romney~., data = TR_Dev_Predict)
+
+TR_Dev = step(null_TR,scope=list(upper=full_TR),data=TR_Dev_Predict,direction="both")
+
+votes$TR_Dev_Pred = predict(TR_Dev, votes)
+```
+
+###Predict Overall Deviation
+```{r Predict Deviation in 2016 from 2012, results = "hide",cache=TRUE}
+Overall_Dev_Predict = votes[,c(14:16,19,20,26:28,30:35,40,42:63,67:76,83:95,98,100)]
+
+Overall_Dev_Predict = na.omit(Overall_Dev_Predict)
+
+null_Overall = lm(per_shift~1, data = Overall_Dev_Predict)
+full_Overall = lm(per_shift~., data = Overall_Dev_Predict)
+
+Overall_Dev = step(null_Overall,scope=list(upper=full_Overall),data=Overall_Dev_Predict, direction = "both")
+
+votes$Overall_Dev_Pred = predict(Overall_Dev, votes)
+```
+
+###Deviation Graphics: Clinton-Obama
+```{r Graph Deviations: Clinton-Obama,cache=TRUE}
+summary(CO_Dev)
+
+votes$model_error_CO = (votes$Clinton_Obama - votes$CO_Dev_Pred)
+
+ME_CO = votes[,c(1,104)]
+colnames(ME_CO) = c("region","value")
+ME_CO$value = cut(ME_CO$value, breaks = c(-10,-5,-1,1,5,10,Inf))
+
+c= CountyChoropleth$new(ME_CO)
+c$title = "Model Deviation: Clinton-Obama"
+c$add_state_outline = TRUE
+c$legend = "Model Deviation"
+c$set_num_colors(6)
+c$ggplot_scale = scale_fill_manual(values=c("red","indianred1","white","lightcyan1","dodgerblue","darkblue"))
+county_ME_CO = c$render() + theme(legend.position = "right")
+county_ME_CO
+```
+
+###Deviation Graphics: Trump-Romney
+```{r Graph Deviations: Trump-Romney,cache=TRUE}
+summary(TR_Dev)
+
+votes$model_error_TR = (votes$Trump_Romney - votes$TR_Dev_Pred)
+
+ME_TR = votes[,c(1,105)]
+colnames(ME_TR) = c("region","value")
+ME_TR$value = cut(ME_TR$value, breaks = c(-25,-10,-5,-1,1,5,10,Inf))
+
+c= CountyChoropleth$new(ME_TR)
+c$title = "Model Deviation: Trump-Romney"
+c$add_state_outline = TRUE
+c$legend = "Model Deviation"
+c$set_num_colors(7)
+c$ggplot_scale = scale_fill_manual(values=c("darkblue","dodgerblue","lightcyan","white","indianred1","red","firebrick4"))
+county_ME_TR = c$render() + theme(legend.position = "right")
+county_ME_TR
+```
+
+###Deviation Graphics: Overall
+```{r Graph Deviation: Overall 2016,cache=TRUE}
+summary(Overall_Dev)
+
+votes$model_error_overall = (votes$per_shift - votes$Overall_Dev_Pred)
+
+ME_Overall = votes[,c(1,106)]
+colnames(ME_Overall) = c("region","value")
+ME_Overall$value = cut(ME_Overall$value, breaks = c(-30,-10,-5,-1,1,5,10,Inf))
+
+c= CountyChoropleth$new(ME_Overall)
+c$title = "Model Deviation: 2016 Election Results"
+c$add_state_outline = TRUE
+c$legend = "Model Deviation"
+c$set_num_colors(7)
+c$ggplot_scale = scale_fill_manual(values=c("darkblue","dodgerblue","lightcyan","white","indianred1","red","firebrick4"))
+county_ME_Overall = c$render() + theme(legend.position = "right")
+county_ME_Overall
+```
+
+###Predict Trump and Clinton percentage
+```{r predict Trump/Clition percentage, results="hide",cache=TRUE}
+Predict_Clinton = votes[,c(8,19,20,26:28,30:35,40,42:63,67:76,83:95,100)]
+Predict_Trump = votes[,c(9,19,20,26:28,30:35,40,42:63,67:76,83:95,100)]
+
+Predict_Clinton = na.omit(Predict_Clinton)
+Predict_Trump = na.omit(Predict_Trump)
+
+#Clinton
+null_Clinton = lm(Clinton~1,data = Predict_Clinton)
+full_Clinton = lm(Clinton~.,data = Predict_Clinton)
+Clinton_Dev = step(null_Clinton,scope=list(upper=full_Clinton),data=Predict_Clinton,direction="both")
+votes$Clinton_Percent_Predict = predict(Clinton_Dev,votes)
+
+#Trump
+null_Trump = lm(Trump~1,data = Predict_Trump)
+full_Trump = lm(Trump~.,data = Predict_Trump)
+Trump_Dev = step(null_Trump,scope=list(upper=full_Trump),data=Predict_Trump,direction="both")
+votes$Trump_Percent_Predict = predict(Trump_Dev,votes)
+```
+
+####Analyze Predict Percentage
+```{r Analyze Predict Percentage,cache=TRUE}
+#Clinton
+summary(Clinton_Dev)
+
+Clinton_Deviation = data.frame(votes[,1])
+Clinton_Deviation$deviation = votes$Clinton - votes$Clinton_Percent_Predict
+colnames(Clinton_Deviation) = c("region", "value")
+Clinton_Deviation$value = cut(Clinton_Deviation$value, breaks = c(-10,-5,-1,1,5,10,Inf))
+
+c= CountyChoropleth$new(Clinton_Deviation)
+c$title = "Clinton Percentage Deviation"
+c$add_state_outline = TRUE
+c$legend = "Model Deviation"
+c$set_num_colors(7)
+c$ggplot_scale = scale_fill_manual(values=c("red","indianred1","white","lightcyan1","dodgerblue","darkblue"))
+county_Clinton_Dev = c$render() + theme(legend.position = "right")
+county_Clinton_Dev
+
+#Trump
+summary(Trump_Dev)
+
+Trump_Deviation = data.frame(votes[,1])
+Trump_Deviation$deviation = votes$Trump - votes$Trump_Percent_Predict
+colnames(Trump_Deviation) = c("region", "value")
+Trump_Deviation$value = cut(Trump_Deviation$value, breaks = c(-25,-10,-5,-1,1,5,10,Inf))
+
+c= CountyChoropleth$new(Trump_Deviation)
+c$title = "Trump Percentage Deviation"
+c$add_state_outline = TRUE
+c$legend = "Model Deviation"
+c$set_num_colors(7)
+c$ggplot_scale = scale_fill_manual(values=c("darkblue","dodgerblue","lightcyan","white","indianred1","red","firebrick4"))
+county_Trump_Dev = c$render() + theme(legend.position = "right")
+county_Trump_Dev
+```
+
+###Predict Total Votes
+```{r predict total votes Trump/Clinton, results="hide",cache=TRUE}
+Predict_Votes_Clinton = votes[,c(5,14:16,19,20,26:28,30:35,40,42:63,67:76,83:95,100)]
+Predict_Votes_Trump = votes[,c(6,14:16,19,20,26:28,30:35,40,42:63,67:76,83:95,100)]
+
+Predict_Votes_Clinton = na.omit(Predict_Votes_Clinton)
+Predict_Votes_Trump = na.omit(Predict_Votes_Trump)
+
+#Clinton
+null_Votes_Clinton = lm(votes_dem_2016~1,data = Predict_Votes_Clinton)
+full_Votes_Clinton = lm(votes_dem_2016~.,data = Predict_Votes_Clinton)
+Clinton_Votes_Dev = step(null_Votes_Clinton,scope=list(upper=full_Votes_Clinton),data=Predict_Votes_Clinton,direction="both")
+votes$Clinton_Votes_Predict = predict(Clinton_Votes_Dev,votes)
+
+#Trump
+null_Votes_Trump = lm(votes_gop_2016~1,data = Predict_Votes_Trump)
+full_Votes_Trump = lm(votes_gop_2016~.,data = Predict_Votes_Trump)
+Trump_Votes_Dev = step(null_Votes_Trump,scope=list(upper=full_Votes_Trump),data=Predict_Votes_Trump,direction="both")
+votes$Trump_Votes_Predict = predict(Trump_Votes_Dev,votes)
+```
+
+
+####Analyze Total Votes
+```{r Analyze Total Votes,cache=TRUE}
+summary(Clinton_Votes_Dev)
+summary(Trump_Votes_Dev)
+
+state_predict = data.frame(states[,c(1,10,11)])
+state_predict$gop_votes = 0
+state_predict$dem_votes = 0
+state_predict$winner = NA
+
+for(i in seq(1:dim(votes)[1])){
+  for(j in seq(1:dim(state_predict)[1])){
+    if(votes[i,12] == state_predict[j,3] && !is.na(votes[i,109]) && !is.na(votes[i,110])){
+      state_predict[j,4] = state_predict[j,4] + votes[i,110]
+      state_predict[j,5] = state_predict[j,5] + votes[i,109]
+    }
+  }
+}
+
+for(i in seq(1:dim(state_predict)[1])){
+  if(state_predict[i,4] > state_predict[i,5]){
+    state_predict[i,6] = "TRUMP"
+  }
+  if(state_predict[i,4] < state_predict[i,5]){
+    state_predict[i,6] = "CLINTON"
+  }
+  if(state_predict[i,4] == state_predict[i,5]){
+    state_predict[i,6] = "TIE"
+  }
+}
+
+colnames(state_predict)[2] = "region"
+colnames(state_predict)[6] = "value"
+
+state_predict$gop_margin = ((state_predict$gop_votes - state_predict$dem_votes) / (state_predict$gop_votes + state_predict$dem_votes)) * 100
+
+c = StateChoropleth$new(state_predict)
+c$title = "2016 Winner Predicted by Model"
+c$add_state_outline = TRUE
+c$legend = "Winner"
+c$set_num_colors(3)
+c$ggplot_scale = scale_fill_manual(values = c("blue","red","white"))
+state_predict2 = c$render() + 
+              theme(legend.position = "right")
+state_predict2
+
+state_margin = state_predict[,c(2,7)]
+colnames(state_margin) = c("region", "value")
+state_margin$value = cut(state_margin$value, breaks = c(-100,-10,-5,-1,1,5,10,100))
+
+c = StateChoropleth$new(state_margin)
+c$title = "2016 Winner Predicted by Model"
+c$add_state_outline = TRUE
+c$legend = "Model Predicted Win Margin"
+c$set_num_colors(7)
+c$ggplot_scale = scale_fill_manual(values=c("darkblue","dodgerblue","lightcyan","white","indianred1","red","firebrick4"))
+state_predict3 = c$render() + 
+              theme(legend.position = "right")
+state_predict3
+
+
 ```
