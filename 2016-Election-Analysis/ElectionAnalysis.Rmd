@@ -3,8 +3,6 @@ title: "ElectionAnalysis"
 author: "sonestak"
 date: "December 23, 2016"
 output:
-  pdf_document:
-    toc: yes
   html_document:
     theme: united
     toc: yes
@@ -26,14 +24,52 @@ colnames(religions) = c("FIPS", "Total_Pop", "Evangelical", "Protestant", "Histo
 votes = merge(x=votes,y=religions,by="FIPS", all.x=T)
 ```
 
-##Exploratory Analaysis - Maps
+#Exploratory Analaysis - Maps
 
-###Basics
-```{r basic data understanding, cache=TRUE}
+##Basics
+```{r basic data understanding,cache=TRUE}
+colnames(votes)[c(29:31,33,36:39,41:43,47:54,56,58:75)] = c("Population 2012",
+                                                         "Persons Under 5", 
+                                                         "Persons Under 18",
+                                                         "% Female 2014",
+                                                         "Indian and Alaskan Native",
+                                                         "Asian",
+                                                         "Native Hawaiian",
+                                                         "2+ Races",
+                                                         "White",
+                                                         "Living in Same House 1+ Years",
+                                                         "Foreign Born",
+                                                         "Veterans",
+                                                         "Travel Time to Work",
+                                                         "Housing Units 2014",
+                                                         "Homeownership Rate",
+                                                         "Housing Units in Multi-Unit Structures",
+                                                         "Median Value of Owner-Occupied Housing Units",
+                                                         "Households",
+                                                         "Persons/Household",
+                                                         "Median Household Income",
+                                                         "Private Nonfarm Establishments 2013",
+                                                         "Private Nonfarm Employment",
+                                                         "% Change - Private Nonfarm Employment",
+                                                         "Nonemployer Establishments - 2013",
+                                                         "Total Number of Firms",
+                                                         "Black-Owned Firms",
+                                                         "Indidan and Alaskan -Owned Firms",
+                                                         "Asian-Owned Firms",
+                                                         "Hawaiian-Owned Firms",
+                                                         "Hispanic-Owned Firms",
+                                                         "Women", 
+                                                         "Manufacturers Shipments - 2007",
+                                                         "Merchant Wholesaler Sales - 2007",
+                                                         "Retail Sales - 2007",
+                                                         "Retail Sales / Capita - 2007",
+                                                         "Accommodation and Food Service Sales - 2007",
+                                                         "Building Permits",
+                                                         "Land Area (in sq miles)")
 colnames(votes)
 ```
 
-###Vote Share Plots
+##Vote Share Plots
 ```{r voter share plots, cache=TRUE}
 library("choroplethr")
 library("choroplethrMaps")
@@ -110,7 +146,7 @@ vote_count_swing = county_choropleth(total_votes,
 vote_count_swing
 ```
 
-###Obama to Clinton (2012 to 2016 Change)
+#Obama to Clinton (2012 to 2016 Change)
 ```{r change in total number of democratic votes from Obama to Clinton, cache=TRUE}
 votes$change_dem_votes = votes$votes_dem_2016 - votes$votes_dem_2012
 
@@ -233,7 +269,7 @@ dem_change_swing = c$render() +
 dem_change_swing
 ```
 
-###Romney to Trump (2012 to 2016 Change)
+#Romney to Trump (2012 to 2016 Change)
 ```{r change in total number of republican votes from Romney to Trump, cache=TRUE}
 votes$change_rep_votes = votes$votes_gop_2016 - votes$votes_gop_2012
 
@@ -355,8 +391,9 @@ rep_change_swing = c$render() +
               theme(legend.position = "right")
 rep_change_swing
 ```
+#Interesting State Examiniation
 
-###Examine Wisconsin
+##Examine Wisconsin
 ```{r examine Wisconsin, cache=TRUE}
 #Clinton
 c = CountyChoropleth$new(dem_votes)
@@ -385,7 +422,7 @@ rep_change_WI
 #Appear to be more significant losses for Clinton than gains for Trump
 ```
 
-###Examine Texas
+##Examine Texas
 ```{r examine Texas,cache=TRUE}
 #Clinton
 c = CountyChoropleth$new(dem_votes)
@@ -412,7 +449,7 @@ rep_change_TX = c$render() +
 rep_change_TX
 ```
 
-###Examine Arizona
+##Examine Arizona
 ```{r examine Arizona, cache=TRUE}
 #Clinton
 c = CountyChoropleth$new(dem_votes)
@@ -439,7 +476,7 @@ rep_change_AZ = c$render() +
 rep_change_AZ
 ```
 
-###Percentage Shift from 2012
+#Percentage Shift from 2012
 ```{r percentage shift from 2012 (Obama-Romney) to 2016 (Clinton-Trump),cache=TRUE}
 votes$per_shift = votes$Trump_Romney - votes$Clinton_Obama
 
@@ -568,7 +605,7 @@ per_change_swing = c$render() +
 per_change_swing
 ```
 
-###Analyze shifts at county level
+##Analyze shifts at county level
 ```{r County shifts analysis,cache=TRUE}
 total_shift = merge(x=dem_votes,y=rep_votes,by="region",all=TRUE)
 total_shift[,6] = NA
@@ -700,7 +737,7 @@ shift_swing = c$render() +
 shift_swing
 ```
 
-###Vote Share at State Level
+#Vote Share at State Level
 ```{r state level vote,cache=TRUE}
 #create empty vector to store the state fips values
 state_levels = vector()
@@ -871,7 +908,7 @@ state_third_US = c$render() +
 state_third_US
 ```
 
-###Examine County Level Winner
+#Examine County Level Winner
 ```{r Examine County Level Winner,cache=TRUE}
 county_winner = votes[,c(1,8,9)]
 
@@ -1011,7 +1048,7 @@ county_swing = c$render() +
 county_swing
 ```
 
-###Analyze Counties that Flipped 2012 to 2016
+#Analyze Counties that Flipped 2012 to 2016
 ```{r County Flips,cache=TRUE}
 votes$flips = NA
 
@@ -1048,10 +1085,10 @@ length(which(votes$flips == "OBAMA to TRUMP"))
 length(which(votes$flips == "Solid County"))
 ```
 
-##Exploratory Analysis - Religion
+#Exploratory Analysis - Religion
 
 
-###Explore religious variables
+##Explore religious variables
 ```{r Analysis,cache=TRUE}
 #total religious population
 religious = votes[,c(1,83)]
@@ -1137,9 +1174,9 @@ county_christian = c$render() + theme(legend.position = "right")
 county_christian
 ```
 
-##Model Construction
+#Model Construction
 
-###Prepare Data for Modeling
+##Prepare Data for Modeling
 ```{r Prepare Data for Modeling,cache=TRUE}
 #change decimals to match the other percentage values
 votes$Trump = votes$Trump * 100
@@ -1155,7 +1192,7 @@ votes$per_shift = votes$per_shift * 100
 
 ```
 
-###Predict Clinton-Obama Deviation
+##Predict Clinton-Obama Deviation
 ```{r Clinton-Obama Deviation, results="hide",cache=TRUE}
 CO_Dev_Predict = votes[,c(14:16,19,20,26:28,30:35,40,42:63,67:77,83:95,100)]
 
@@ -1169,7 +1206,7 @@ CO_Dev = step(null_CO,scope=list(upper=full_CO),data=CO_Dev_Predict,direction="b
 votes$CO_Dev_Pred = predict(CO_Dev,votes)
 ```
 
-###Predict Trump-Romney Deviation
+##Predict Trump-Romney Deviation
 ```{r Trump-Romney Deviation, results="hide",cache=TRUE}
 TR_Dev_Predict =  votes[,c(14:16,19,20,26:28,30:35,40,42:63,67:76,78,83:95,100)]
 
@@ -1183,7 +1220,7 @@ TR_Dev = step(null_TR,scope=list(upper=full_TR),data=TR_Dev_Predict,direction="b
 votes$TR_Dev_Pred = predict(TR_Dev, votes)
 ```
 
-###Predict Overall Deviation
+##Predict Overall Deviation
 ```{r Predict Deviation in 2016 from 2012, results = "hide",cache=TRUE}
 Overall_Dev_Predict = votes[,c(14:16,19,20,26:28,30:35,40,42:63,67:76,83:95,98,100)]
 
@@ -1197,7 +1234,7 @@ Overall_Dev = step(null_Overall,scope=list(upper=full_Overall),data=Overall_Dev_
 votes$Overall_Dev_Pred = predict(Overall_Dev, votes)
 ```
 
-###Deviation Graphics: Clinton-Obama
+##Deviation Graphics: Clinton-Obama
 ```{r Graph Deviations: Clinton-Obama,cache=TRUE}
 summary(CO_Dev)
 
@@ -1217,7 +1254,7 @@ county_ME_CO = c$render() + theme(legend.position = "right")
 county_ME_CO
 ```
 
-###Deviation Graphics: Trump-Romney
+##Deviation Graphics: Trump-Romney
 ```{r Graph Deviations: Trump-Romney,cache=TRUE}
 summary(TR_Dev)
 
@@ -1237,7 +1274,7 @@ county_ME_TR = c$render() + theme(legend.position = "right")
 county_ME_TR
 ```
 
-###Deviation Graphics: Overall
+##Deviation Graphics: Overall
 ```{r Graph Deviation: Overall 2016,cache=TRUE}
 summary(Overall_Dev)
 
@@ -1278,7 +1315,7 @@ Trump_Dev = step(null_Trump,scope=list(upper=full_Trump),data=Predict_Trump,dire
 votes$Trump_Percent_Predict = predict(Trump_Dev,votes)
 ```
 
-####Analyze Predict Percentage
+###Analyze Predict Percentage
 ```{r Analyze Predict Percentage,cache=TRUE}
 #Clinton
 summary(Clinton_Dev)
@@ -1315,7 +1352,7 @@ county_Trump_Dev = c$render() + theme(legend.position = "right")
 county_Trump_Dev
 ```
 
-###Predict Total Votes
+#Predict Total Votes
 ```{r predict total votes Trump/Clinton, results="hide",cache=TRUE}
 Predict_Votes_Clinton = votes[,c(5,14:16,19,20,26:28,30:35,40,42:63,67:76,83:95,100)]
 Predict_Votes_Trump = votes[,c(6,14:16,19,20,26:28,30:35,40,42:63,67:76,83:95,100)]
@@ -1337,7 +1374,7 @@ votes$Trump_Votes_Predict = predict(Trump_Votes_Dev,votes)
 ```
 
 
-####Analyze Total Votes
+##Analyze Total Votes
 ```{r Analyze Total Votes,cache=TRUE}
 summary(Clinton_Votes_Dev)
 summary(Trump_Votes_Dev)
@@ -1399,3 +1436,119 @@ state_predict3
 
 
 ```
+
+
+
+#Correlation Analysis
+```{r Collelation Analysis, cache=TRUE}
+library(corrplot)
+
+corr_subset = subset(votes, select=c(Trump,Clinton,Romney,Obama,population_change,White,Black,Hispanic,Income,Edu_highschool,Edu_batchelors))
+corr_subset_religion = subset(votes, select=c(Trump,Clinton,Romney,Obama,Evangelical,Protestant,Catholic,Jewish,Mormon,Christian))
+
+correlation = cor(corr_subset,use = "complete.obs")
+correlation_religion = cor(corr_subset_religion,use = "complete.obs")
+
+
+demographics = corrplot(correlation, method="shade", shade.col=NA, tl.col="black", tl.srt=45, addCoef.col="black", addcolorlabel="no")
+religion = corrplot(correlation_religion, method="shade", shade.col=NA, tl.col="black", tl.srt=45, addCoef.col="black", addcolorlabel="no")
+
+demographics
+religion
+```
+
+
+#Most Important Feature Analysis
+
+##Clinton
+```{r Most Important Features-Clinton,cache=TRUE}
+library(h2o)
+
+h2o.init(nthreads=-1,max_mem_size='6G')
+
+predict.Clinton = as.h2o(Predict_Clinton)
+vars.Clinton = colnames(predict.Clinton)
+x_vars.Clinton = c(vars.Clinton[2:59])
+y_var.Clinton = vars.Clinton[1]
+
+Clinton_features = h2o.randomForest(x=x_vars.Clinton,
+                                y=y_var.Clinton,
+                                seed=123,
+                                training_frame = predict.Clinton,
+                                ntrees=200,
+                                stopping_rounds = 2,
+                                score_each_iteration = TRUE,
+                                nfolds = 10)
+
+summary(Clinton_features)
+
+h2o.varimp(Clinton_features)[1:20,]
+
+h2o.varimp_plot(Clinton_features, num_of_features = 20)
+
+```
+
+##Trump
+```{r Most Important Features - Trump,cache=TRUE}
+predict.Trump = as.h2o(Predict_Trump)
+vars.Trump = colnames(predict.Trump)
+x_vars.Trump = c(vars.Trump[2:59])
+y_var.Trump = vars.Trump[1]
+
+Trump_features = h2o.randomForest(x=x_vars.Trump,
+                                y=y_var.Trump,
+                                seed=123,
+                                training_frame = predict.Trump,
+                                ntrees=200,
+                                stopping_rounds = 2,
+                                score_each_iteration = TRUE,
+                                nfolds = 10)
+
+summary(Trump_features)
+
+h2o.varimp(Trump_features)[1:20,]
+
+h2o.varimp_plot(Trump_features, num_of_features = 20)
+
+
+```
+
+##Swing Predict
+```{r Most Important Features-Swing,cache=TRUE}
+predict.Swing = as.h2o(Overall_Dev_Predict)
+vars.Swing = colnames(predict.Swing)
+x_vars.Swing = c(vars.Swing[1:60],vars.Swing[62])
+y_var.Swing = vars.Swing[61]
+
+Swing_features = h2o.randomForest(x=x_vars.Swing,
+                                y=y_var.Swing,
+                                seed=123,
+                                training_frame = predict.Swing,
+                                ntrees=200,
+                                stopping_rounds = 2,
+                                score_each_iteration = TRUE,
+                                nfolds = 10)
+
+summary(Swing_features)
+
+h2o.varimp(Swing_features)[1:20,]
+
+h2o.varimp_plot(Swing_features, num_of_features = 20)
+```
+
+###Correlation of Most important swing variables
+```{r Correlation Swing,cache=TRUE}
+corr_subset_swing = votes[,c(8,9,43,46,20,19,28,32,74,35,34,44,54)]
+
+correlation_swing = cor(corr_subset_swing,use = "complete.obs")
+
+
+swing = corrplot(correlation_swing, method="shade", shade.col=NA, tl.col="black", tl.srt=45, addCoef.col="black", addcolorlabel="no")
+
+
+swing
+```
+
+
+
+
