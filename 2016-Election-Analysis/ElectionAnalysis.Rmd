@@ -82,7 +82,8 @@ colnames(total_votes) = c('region','value')
 vote_count = county_choropleth(total_votes,
                                legend = "Votes",
                                num_colors = 9,
-                               title = "Vote Count by County")
+                               title = "Vote Count by County",
+                               state_zoom=c("maine","new hampshire", "vermont", "massachusetts","connecticut","rhode island","new york", "pennsylvania", "new jersey", "maryland","delaware","west virginia","virginia","tennessee","kentucky","north carolina","south carolina","georgia","florida","arkansas","mississippi","alabama","louisiana","ohio","michigan","indiana","illinois","wisconsin","minnesota","iowa","missouri","north dakota","south dakota","nebraska","kansas","texas","oklahoma","new mexico","arizona","colorado","wyoming","montana","idaho","utah","nevada","california","oregon","washington"))
 vote_count
 
 #Break down county vote into regions of the US for easier viewing
@@ -133,7 +134,7 @@ vote_count_W = county_choropleth(total_votes,
                                legend = "Votes",
                                num_colors = 9,
                                title = "Vote Count by County - West",
-                               state_zoom = c("colorado","wyoming","montana","idaho","utah","nevada","california","oregon","washington","alaska","hawaii"))
+                               state_zoom = c("colorado","wyoming","montana","idaho","utah","nevada","california","oregon","washington"))
 vote_count_W
 
 
@@ -156,17 +157,17 @@ colnames(dem_votes) = c('region','votes','value')
 
 for(i in seq(1:dim(dem_votes)[1])){
   if(dem_votes[i,2] > 0 && dem_votes[i,2] < 1000){
-    dem_votes[i,3] = "Gain - Small"
+    dem_votes[i,3] = "Gain - Small (<1000)"
   } else if(dem_votes[i,2] > 1000 && dem_votes[i,2] < 10000){
-    dem_votes[i,3] = "Gain - Considerable"
+    dem_votes[i,3] = "Gain - Considerable (1000-10000)"
   } else if(dem_votes[i,2] >= 10000){
-    dem_votes[i,3] = "Gain - Large"
+    dem_votes[i,3] = "Gain - Large (>10000)"
   } else if(dem_votes[i,2] < 0 && dem_votes[i,2] > -1000) {
-    dem_votes[i,3] = "Loss - Small"
+    dem_votes[i,3] = "Loss - Small (<1000)"
   } else if(dem_votes[i,2] < -1000 && dem_votes[i,2] > -10000){
-    dem_votes[i,3] = "Loss - Considerable"
+    dem_votes[i,3] = "Loss - Considerable (1000-10000)"
   } else if(dem_votes[i,2] < -10000){
-    dem_votes[i,3] = "Loss - Large"
+    dem_votes[i,3] = "Loss - Large (>10000)"
   } else{
   dem_votes[i,3] = "Equal"
   }
@@ -178,6 +179,7 @@ c$add_state_outline = TRUE
 c$legend = "Change in Votes"
 c$set_num_colors(7)
 c$ggplot_scale = scale_fill_manual(values = c("white", "blue","navy","deepskyblue","red","darkred","lightpink"))
+c$set_zoom(c("maine","new hampshire", "vermont", "massachusetts","connecticut","rhode island","new york", "pennsylvania", "new jersey", "maryland","delaware","west virginia","virginia","tennessee","kentucky","north carolina","south carolina","georgia","florida","arkansas","mississippi","alabama","louisiana","ohio","michigan","indiana","illinois","wisconsin","minnesota","iowa","missouri","north dakota","south dakota","nebraska","kansas","texas","oklahoma","new mexico","arizona","colorado","wyoming","montana","idaho","utah","nevada","california","oregon","washington"))
 dem_change_US = c$render() + 
               theme(legend.position = "right")
 dem_change_US
@@ -279,17 +281,17 @@ colnames(rep_votes) = c('region','votes','value')
 
 for(i in seq(1:dim(rep_votes)[1])){
   if(rep_votes[i,2] > 0 && rep_votes[i,2] < 1000){
-    rep_votes[i,3] = "Gain - Small"
+    rep_votes[i,3] = "Gain - Small (<1000)"
   } else if(rep_votes[i,2] > 1000 && rep_votes[i,2] < 10000){
-    rep_votes[i,3] = "Gain - Considerable"
+    rep_votes[i,3] = "Gain - Considerable (1000-10000)"
   } else if(rep_votes[i,2] >= 10000){
-    rep_votes[i,3] = "Gain - Large"
+    rep_votes[i,3] = "Gain - Large (>10000)"
   } else if(rep_votes[i,2] < 0 && rep_votes[i,2] > -1000) {
-    rep_votes[i,3] = "Loss - Small"
+    rep_votes[i,3] = "Loss - Small (<1000)"
   } else if(rep_votes[i,2] < -1000 && rep_votes[i,2] > -10000){
-    rep_votes[i,3] = "Loss - Considerable"
+    rep_votes[i,3] = "Loss - Considerable (1000-10000)"
   } else if(rep_votes[i,2] < -10000){
-    rep_votes[i,3] = "Loss - Large"
+    rep_votes[i,3] = "Loss - Large (>10000)"
   } else{
   rep_votes[i,3] = "Equal"
   }
@@ -301,6 +303,7 @@ c$add_state_outline = TRUE
 c$legend = "Change in Votes"
 c$set_num_colors(7)
 c$ggplot_scale = scale_fill_manual(values = c("white","red","darkred","lightpink","blue","navy","deepskyblue"))
+c$set_zoom(c("maine","new hampshire", "vermont", "massachusetts","connecticut","rhode island","new york", "pennsylvania", "new jersey", "maryland","delaware","west virginia","virginia","tennessee","kentucky","north carolina","south carolina","georgia","florida","arkansas","mississippi","alabama","louisiana","ohio","michigan","indiana","illinois","wisconsin","minnesota","iowa","missouri","north dakota","south dakota","nebraska","kansas","texas","oklahoma","new mexico","arizona","colorado","wyoming","montana","idaho","utah","nevada","california","oregon","washington"))
 rep_change_US = c$render() + 
               theme(legend.position = "right")
 rep_change_US
@@ -514,6 +517,7 @@ c$add_state_outline = TRUE
 c$legend = "Change in Votes"
 c$set_num_colors(6)
 c$ggplot_scale = scale_fill_manual(values = c("blue","navy","deepskyblue","red","darkred","lightpink"))
+c$set_zoom(c("maine","new hampshire", "vermont", "massachusetts","connecticut","rhode island","new york", "pennsylvania", "new jersey", "maryland","delaware","west virginia","virginia","tennessee","kentucky","north carolina","south carolina","georgia","florida","arkansas","mississippi","alabama","louisiana","ohio","michigan","indiana","illinois","wisconsin","minnesota","iowa","missouri","north dakota","south dakota","nebraska","kansas","texas","oklahoma","new mexico","arizona","colorado","wyoming","montana","idaho","utah","nevada","california","oregon","washington"))
 per_change_US = c$render() + 
               theme(legend.position = "right")
 per_change_US
@@ -646,6 +650,7 @@ c$add_state_outline = TRUE
 c$legend = "Change in Votes"
 c$set_num_colors(7)
 c$ggplot_scale = scale_fill_manual(values = c("lightpink", "deepskyblue","yellow","navy","grey","red","green"))
+c$set_zoom(c("maine","new hampshire", "vermont", "massachusetts","connecticut","rhode island","new york", "pennsylvania", "new jersey", "maryland","delaware","west virginia","virginia","tennessee","kentucky","north carolina","south carolina","georgia","florida","arkansas","mississippi","alabama","louisiana","ohio","michigan","indiana","illinois","wisconsin","minnesota","iowa","missouri","north dakota","south dakota","nebraska","kansas","texas","oklahoma","new mexico","arizona","colorado","wyoming","montana","idaho","utah","nevada","california","oregon","washington"))
 shift_US = c$render() + 
               theme(legend.position = "right")
 shift_US
@@ -903,6 +908,7 @@ c$add_state_outline = TRUE
 c$legend = "Third Party %"
 c$set_num_colors(6)
 c$ggplot_scale = scale_fill_manual(values = c("purple", "red","orange","blue", "green","yellow"))
+c$set_zoom(c("maine","new hampshire", "vermont", "massachusetts","connecticut","rhode island","new york", "pennsylvania", "new jersey", "maryland","delaware","west virginia","virginia","tennessee","kentucky","north carolina","south carolina","georgia","florida","arkansas","mississippi","alabama","louisiana","ohio","michigan","indiana","illinois","wisconsin","minnesota","iowa","missouri","north dakota","south dakota","nebraska","kansas","texas","oklahoma","new mexico","arizona","colorado","wyoming","montana","idaho","utah","nevada","california","oregon","washington"))
 state_third_US = c$render() + 
               theme(legend.position = "right")
 state_third_US
@@ -956,6 +962,7 @@ c$add_state_outline = TRUE
 c$legend = "County Winner Margin"
 c$set_num_colors(8)
 c$ggplot_scale = scale_fill_manual(values = c("lightblue","navy", "dodgerblue1","blue",  "lightpink", "darkred","red", "firebrick"))
+c$set_zoom(c("maine","new hampshire", "vermont", "massachusetts","connecticut","rhode island","new york", "pennsylvania", "new jersey", "maryland","delaware","west virginia","virginia","tennessee","kentucky","north carolina","south carolina","georgia","florida","arkansas","mississippi","alabama","louisiana","ohio","michigan","indiana","illinois","wisconsin","minnesota","iowa","missouri","north dakota","south dakota","nebraska","kansas","texas","oklahoma","new mexico","arizona","colorado","wyoming","montana","idaho","utah","nevada","california","oregon","washington"))
 county_US = c$render() + 
               theme(legend.position = "right")
 county_US
@@ -1071,6 +1078,7 @@ c$add_state_outline = TRUE
 c$legend = "County Status"
 c$set_num_colors(3)
 c$ggplot_scale = scale_fill_manual(values = c("red","blue","white"))
+c$set_zoom(c("maine","new hampshire", "vermont", "massachusetts","connecticut","rhode island","new york", "pennsylvania", "new jersey", "maryland","delaware","west virginia","virginia","tennessee","kentucky","north carolina","south carolina","georgia","florida","arkansas","mississippi","alabama","louisiana","ohio","michigan","indiana","illinois","wisconsin","minnesota","iowa","missouri","north dakota","south dakota","nebraska","kansas","texas","oklahoma","new mexico","arizona","colorado","wyoming","montana","idaho","utah","nevada","california","oregon","washington"))
 county_flips = c$render() + 
               theme(legend.position = "right")
 county_flips
@@ -1098,6 +1106,7 @@ c= CountyChoropleth$new(religious)
 c$title = "Total Religious Population"
 c$add_state_outline = TRUE
 c$legend = "Religious Percentage"
+c$set_zoom(c("maine","new hampshire", "vermont", "massachusetts","connecticut","rhode island","new york", "pennsylvania", "new jersey", "maryland","delaware","west virginia","virginia","tennessee","kentucky","north carolina","south carolina","georgia","florida","arkansas","mississippi","alabama","louisiana","ohio","michigan","indiana","illinois","wisconsin","minnesota","iowa","missouri","north dakota","south dakota","nebraska","kansas","texas","oklahoma","new mexico","arizona","colorado","wyoming","montana","idaho","utah","nevada","california","oregon","washington"))
 county_religious = c$render() + theme(legend.position = "right")
 county_religious
 
@@ -1112,6 +1121,7 @@ c$add_state_outline = TRUE
 c$set_num_colors(5)
 c$ggplot_scale = scale_fill_manual(values = c("white","darkseagreen1", "greenyellow","green",  "darkgreen"))
 c$legend = "Evangelical Percentage"
+c$set_zoom(c("maine","new hampshire", "vermont", "massachusetts","connecticut","rhode island","new york", "pennsylvania", "new jersey", "maryland","delaware","west virginia","virginia","tennessee","kentucky","north carolina","south carolina","georgia","florida","arkansas","mississippi","alabama","louisiana","ohio","michigan","indiana","illinois","wisconsin","minnesota","iowa","missouri","north dakota","south dakota","nebraska","kansas","texas","oklahoma","new mexico","arizona","colorado","wyoming","montana","idaho","utah","nevada","california","oregon","washington"))
 county_evangelical = c$render() + theme(legend.position = "right")
 county_evangelical
 
@@ -1125,6 +1135,7 @@ c$title = "Catholic Population"
 c$add_state_outline = TRUE
 c$set_num_colors(5)
 c$ggplot_scale = scale_fill_manual(values = c("white","thistle1", "plum3","purple",  "purple4"))
+c$set_zoom(c("maine","new hampshire", "vermont", "massachusetts","connecticut","rhode island","new york", "pennsylvania", "new jersey", "maryland","delaware","west virginia","virginia","tennessee","kentucky","north carolina","south carolina","georgia","florida","arkansas","mississippi","alabama","louisiana","ohio","michigan","indiana","illinois","wisconsin","minnesota","iowa","missouri","north dakota","south dakota","nebraska","kansas","texas","oklahoma","new mexico","arizona","colorado","wyoming","montana","idaho","utah","nevada","california","oregon","washington"))
 c$legend = "Catholic Percentage"
 county_catholic = c$render() + theme(legend.position = "right")
 county_catholic
@@ -1140,6 +1151,7 @@ c$add_state_outline = TRUE
 c$legend = "Mormon Percentage"
 c$set_num_colors(5)
 c$ggplot_scale = scale_fill_manual(values = c("white","lightpink", "lightpink3","firebrick1",  "firebrick4"))
+c$set_zoom(c("maine","new hampshire", "vermont", "massachusetts","connecticut","rhode island","new york", "pennsylvania", "new jersey", "maryland","delaware","west virginia","virginia","tennessee","kentucky","north carolina","south carolina","georgia","florida","arkansas","mississippi","alabama","louisiana","ohio","michigan","indiana","illinois","wisconsin","minnesota","iowa","missouri","north dakota","south dakota","nebraska","kansas","texas","oklahoma","new mexico","arizona","colorado","wyoming","montana","idaho","utah","nevada","california","oregon","washington"))
 county_mormon = c$render() + theme(legend.position = "right")
 county_mormon
 
@@ -1154,6 +1166,7 @@ c$add_state_outline = TRUE
 c$legend = "Jewish Percentage"
 c$set_num_colors(5)
 c$ggplot_scale = scale_fill_manual(values = c("white","cyan", "cyan3","blue",  "darkblue"))
+c$set_zoom(c("maine","new hampshire", "vermont", "massachusetts","connecticut","rhode island","new york", "pennsylvania", "new jersey", "maryland","delaware","west virginia","virginia","tennessee","kentucky","north carolina","south carolina","georgia","florida","arkansas","mississippi","alabama","louisiana","ohio","michigan","indiana","illinois","wisconsin","minnesota","iowa","missouri","north dakota","south dakota","nebraska","kansas","texas","oklahoma","new mexico","arizona","colorado","wyoming","montana","idaho","utah","nevada","california","oregon","washington"))
 county_jewish = c$render() + theme(legend.position = "right")
 county_jewish
 
@@ -1170,6 +1183,7 @@ c$add_state_outline = TRUE
 c$set_num_colors(8)
 c$ggplot_scale = scale_fill_manual(values = c("white","yellow", "salmon","springgreen","brown1", "deepskyblue", "darkmagenta", "darkblue"))
 c$legend = "Christian Percentage"
+c$set_zoom(c("maine","new hampshire", "vermont", "massachusetts","connecticut","rhode island","new york", "pennsylvania", "new jersey", "maryland","delaware","west virginia","virginia","tennessee","kentucky","north carolina","south carolina","georgia","florida","arkansas","mississippi","alabama","louisiana","ohio","michigan","indiana","illinois","wisconsin","minnesota","iowa","missouri","north dakota","south dakota","nebraska","kansas","texas","oklahoma","new mexico","arizona","colorado","wyoming","montana","idaho","utah","nevada","california","oregon","washington"))
 county_christian = c$render() + theme(legend.position = "right")
 county_christian
 ```
@@ -1250,6 +1264,7 @@ c$add_state_outline = TRUE
 c$legend = "Model Deviation"
 c$set_num_colors(6)
 c$ggplot_scale = scale_fill_manual(values=c("red","indianred1","white","lightcyan1","dodgerblue","darkblue"))
+c$set_zoom(c("maine","new hampshire", "vermont", "massachusetts","connecticut","rhode island","new york", "pennsylvania", "new jersey", "maryland","delaware","west virginia","virginia","tennessee","kentucky","north carolina","south carolina","georgia","florida","arkansas","mississippi","alabama","louisiana","ohio","michigan","indiana","illinois","wisconsin","minnesota","iowa","missouri","north dakota","south dakota","nebraska","kansas","texas","oklahoma","new mexico","arizona","colorado","wyoming","montana","idaho","utah","nevada","california","oregon","washington"))
 county_ME_CO = c$render() + theme(legend.position = "right")
 county_ME_CO
 ```
@@ -1270,6 +1285,7 @@ c$add_state_outline = TRUE
 c$legend = "Model Deviation"
 c$set_num_colors(7)
 c$ggplot_scale = scale_fill_manual(values=c("darkblue","dodgerblue","lightcyan","white","indianred1","red","firebrick4"))
+c$set_zoom(c("maine","new hampshire", "vermont", "massachusetts","connecticut","rhode island","new york", "pennsylvania", "new jersey", "maryland","delaware","west virginia","virginia","tennessee","kentucky","north carolina","south carolina","georgia","florida","arkansas","mississippi","alabama","louisiana","ohio","michigan","indiana","illinois","wisconsin","minnesota","iowa","missouri","north dakota","south dakota","nebraska","kansas","texas","oklahoma","new mexico","arizona","colorado","wyoming","montana","idaho","utah","nevada","california","oregon","washington"))
 county_ME_TR = c$render() + theme(legend.position = "right")
 county_ME_TR
 ```
@@ -1290,6 +1306,7 @@ c$add_state_outline = TRUE
 c$legend = "Model Deviation"
 c$set_num_colors(7)
 c$ggplot_scale = scale_fill_manual(values=c("darkblue","dodgerblue","lightcyan","white","indianred1","red","firebrick4"))
+c$set_zoom(c("maine","new hampshire", "vermont", "massachusetts","connecticut","rhode island","new york", "pennsylvania", "new jersey", "maryland","delaware","west virginia","virginia","tennessee","kentucky","north carolina","south carolina","georgia","florida","arkansas","mississippi","alabama","louisiana","ohio","michigan","indiana","illinois","wisconsin","minnesota","iowa","missouri","north dakota","south dakota","nebraska","kansas","texas","oklahoma","new mexico","arizona","colorado","wyoming","montana","idaho","utah","nevada","california","oregon","washington"))
 county_ME_Overall = c$render() + theme(legend.position = "right")
 county_ME_Overall
 ```
@@ -1331,6 +1348,8 @@ c$add_state_outline = TRUE
 c$legend = "Model Deviation"
 c$set_num_colors(7)
 c$ggplot_scale = scale_fill_manual(values=c("red","indianred1","white","lightcyan1","dodgerblue","darkblue"))
+c$set_zoom(c("maine","new hampshire", "vermont", "massachusetts","connecticut","rhode island","new york", "pennsylvania", "new jersey", "maryland","delaware","west virginia","virginia","tennessee","kentucky","north carolina","south carolina","georgia","florida","arkansas","mississippi","alabama","louisiana","ohio","michigan","indiana","illinois","wisconsin","minnesota","iowa","missouri","north dakota","south dakota","nebraska","kansas","texas","oklahoma","new mexico","arizona","colorado","wyoming","montana","idaho","utah","nevada","california","oregon","washington"))
+county_Trump_Dev = c$render() + theme(legend.position = "right")
 county_Clinton_Dev = c$render() + theme(legend.position = "right")
 county_Clinton_Dev
 
@@ -1348,6 +1367,7 @@ c$add_state_outline = TRUE
 c$legend = "Model Deviation"
 c$set_num_colors(7)
 c$ggplot_scale = scale_fill_manual(values=c("darkblue","dodgerblue","lightcyan","white","indianred1","red","firebrick4"))
+c$set_zoom(c("maine","new hampshire", "vermont", "massachusetts","connecticut","rhode island","new york", "pennsylvania", "new jersey", "maryland","delaware","west virginia","virginia","tennessee","kentucky","north carolina","south carolina","georgia","florida","arkansas","mississippi","alabama","louisiana","ohio","michigan","indiana","illinois","wisconsin","minnesota","iowa","missouri","north dakota","south dakota","nebraska","kansas","texas","oklahoma","new mexico","arizona","colorado","wyoming","montana","idaho","utah","nevada","california","oregon","washington"))
 county_Trump_Dev = c$render() + theme(legend.position = "right")
 county_Trump_Dev
 ```
@@ -1549,6 +1569,615 @@ swing = corrplot(correlation_swing, method="shade", shade.col=NA, tl.col="black"
 swing
 ```
 
+###Prediction by Most Important Features
+```{r Prediction - most important features, cache=T}
+
+clinton_1 = summary(lm(Clinton ~ Obama, data=votes))$adj.r.squared
+clinton_2 = summary(lm(Clinton ~ Obama + votes[,73],data=votes))$adj.r.squared
+clinton_3 = summary(lm(Clinton ~ Obama + votes[,73] + votes[,51],data=votes))$adj.r.squared
+clinton_4 = summary(lm(Clinton ~ Obama + votes[,73] + votes[,51] + votes[,35],data=votes))$adj.r.squared
+clinton_5 = summary(lm(Clinton ~ Obama + votes[,73] + votes[,51] + votes[,35] + votes[,34],data=votes))$adj.r.squared
+
+Clinton_rsq = c(0,clinton_1,clinton_2,clinton_3,clinton_4,clinton_5)
+
+trump_1 = summary(lm(Trump ~ Romney, data=votes))$adj.r.squared
+trump_2 = summary(lm(Trump ~ Romney + votes[,51], data=votes))$adj.r.squared
+trump_3 = summary(lm(Trump ~ Romney + votes[,51] + votes[,73], data=votes))$adj.r.squared
+trump_4 = summary(lm(Trump ~ Romney + votes[,51] + votes[,73] + votes[,46], data=votes))$adj.r.squared
+trump_5 = summary(lm(Trump ~ Romney + votes[,51] + votes[,73] + votes[,46] + votes[,35], data=votes))$adj.r.squared
+
+Trump_rsq = c(0,trump_1,trump_2,trump_3,trump_4,trump_5)
+
+shift_1 = summary(lm(per_shift ~ votes[,43],data=votes))$adj.r.squared
+shift_2 = summary(lm(per_shift ~ votes[,43] + votes[,46],data=votes))$adj.r.squared
+shift_3 = summary(lm(per_shift ~ votes[,43] + votes[,46] + votes[,20],data=votes))$adj.r.squared
+shift_4 = summary(lm(per_shift ~ votes[,43] + votes[,46] + votes[,20]+ votes[,28],data=votes))$adj.r.squared
+shift_5 = summary(lm(per_shift ~ votes[,43] + votes[,46] + votes[,20]+ votes[,28] + votes[,32],data=votes))$adj.r.squared
+
+theshift = c(0,shift_1,shift_2,shift_3,shift_4,shift_5)
+num = c(0,1,2,3,4,5)
 
 
+theMax = max(Clinton_rsq,Trump_rsq,theshift)
+theMin = min(Clinton_rsq,Trump_rsq,theshift)
+
+
+
+plot(num,
+     Clinton_rsq,
+     col = "blue",
+     type = "b",
+     main = "Accuracy for Features Selected",
+     xlab = "Number of features",
+     ylab = "Accuracy",
+     ylim=c(0,theMax))
+par(new=T)
+plot(num,
+     Trump_rsq,
+     col = "red",
+     type = "b",
+     main = "Accuracy for Features Selected",
+     xlab = "Number of features",
+     ylab = "Accuracy",
+     ylim=c(0,theMax))
+par(new=T)
+plot(num,
+     theshift,
+     type = "b",
+     main = "Accuracy for Features Selected",
+     xlab = "Number of features",
+     ylab = "Accuracy",
+     ylim=c(0,theMax))
+legend("bottomright",legend=c("Clinton","Trump","Shift"),fill=c('blue','red','black'))
+
+cat("Clinton - Obama Variation:", clinton_1,"\n")
+cat("Trump - Romney Variation:", trump_1)
+```
+
+###Swing Variable Understand
+```{r Swing Variables, cache=T}
+theSubset = votes[,c(19,20,28,31,32,34,35,40,43,44,46,52,54,55,74,84,85,86,89,98,100)]
+Swing_features = lm(per_shift ~ .,data=theSubset)
+summary(Swing_features)
+
+
+```
+
+#My Model
+```{r my model, cache=T}
+my_subset = votes[,c(28,32,34,40,46,51,52,55,74,84,89,98,100)]
+my_subset = na.omit(my_subset)
+my_subset$IncomeXPopChange = my_subset$population_change * my_subset$Edu_batchelors
+my_model = lm(per_shift ~ .,data=my_subset)
+summary(my_model)
+
+```
+
+#Separate Red, Blue, and Swing States
+
+###Swing state categorization was determined based on a competitive ground
+####While Utah appeared it may have been close for a while due to third party candidate Evan McMullin, Utah remains a red state because Clinton never made a play for the state and it appeared Trump would almost certainly win in the end
+##### Red = 22, Blue = 14 + DC, Swing = 14
+```{r separate the states,cahce=TRUE}
+RedStates = votes[which(votes$state_abbr == "AL" |
+                        votes$state_abbr == "Ak" |
+                        votes$state_abbr == "AR" |
+                        votes$state_abbr == "GA" |
+                        votes$state_abbr == "ID" |
+                        votes$state_abbr == "IN" |
+                        votes$state_abbr == "KS" |
+                        votes$state_abbr == "KY" |
+                        votes$state_abbr == "LA" |
+                        votes$state_abbr == "MS" |
+                        votes$state_abbr == "MO" |
+                        votes$state_abbr == "MT" |
+                        votes$state_abbr == "NE" |
+                        votes$state_abbr == "ND" |
+                        votes$state_abbr == "OK" |
+                        votes$state_abbr == "SC" |
+                        votes$state_abbr == "SD" |
+                        votes$state_abbr == "TN" |
+                        votes$state_abbr == "TX" |
+                        votes$state_abbr == "UT" |
+                        votes$state_abbr == "WV" |
+                        votes$state_abbr == "WY"),]
+
+BlueStates = votes[which(votes$state_abbr == "CA" |
+                         votes$state_abbr == "CT" |
+                         votes$state_abbr == "DE" |
+                         votes$state_abbr == "HI" |
+                         votes$state_abbr == "IL" |
+                         votes$state_abbr == "MA" |
+                         votes$state_abbr == "MD" |
+                         votes$state_abbr == "NJ" |
+                         votes$state_abbr == "NM" |
+                         votes$state_abbr == "NY" |
+                         votes$state_abbr == "OR" |
+                         votes$state_abbr == "RI" |
+                         votes$state_abbr == "VT" |
+                         votes$state_abbr == "WA" |
+                         votes$state_abbr == "DC"),]
+
+SwingStates = votes[which(votes$state_abbr == "AZ" |
+                          votes$state_abbr == "CO" |
+                          votes$state_abbr == "FL" |
+                          votes$state_abbr == "IA" |
+                          votes$state_abbr == "ME" |
+                          votes$state_abbr == "MI" |
+                          votes$state_abbr == "MN" |
+                          votes$state_abbr == "NV" |
+                          votes$state_abbr == "NH" |
+                          votes$state_abbr == "NC" |
+                          votes$state_abbr == "OH" |
+                          votes$state_abbr == "PA" |
+                          votes$state_abbr == "VA" |
+                          votes$state_abbr == "WI"),]
+```
+
+##Analze Correlation Differences between states
+```{r correlations red-blue-swing,cache=TRUE}
+Red_subset1 = RedStates[,c(8,9,19,20,28,32,34,35,40,46,51)]
+Red_subset2 = RedStates[,c(8,9,52,55,74,76,84,85,87,89,100)]
+
+Blue_subset1 = BlueStates[,c(8,9,19,20,28,32,34,35,40,46,51)]
+Blue_subset2 = BlueStates[,c(8,9,52,55,74,76,84,85,87,89,100)]
+
+Swing_subset1 = SwingStates[,c(8,9,19,20,28,32,34,35,40,46,51)]
+Swing_subset2 = SwingStates[,c(8,9,52,55,74,76,84,85,87,89,100)]
+
+Red_cor1 = cor(Red_subset1,use = "complete.obs")
+Red_cor2 = cor(Red_subset2,use = "complete.obs")
+Blue_cor1 = cor(Blue_subset1,use = "complete.obs")
+Blue_cor2 = cor(Blue_subset2,use = "complete.obs")
+Swing_cor1 = cor(Swing_subset1,use = "complete.obs")
+Swing_cor2 = cor(Swing_subset2,use = "complete.obs")
+
+Red1 = corrplot(Red_cor1, method="shade", shade.col=NA, tl.col="black", tl.srt=45, addCoef.col="black", addcolorlabel="no",title="Correlation Red States")
+Red2 = corrplot(Red_cor2, method="shade", shade.col=NA, tl.col="black", tl.srt=45, addCoef.col="black", addcolorlabel="no",title="Correlation Red States")
+Blue1 = corrplot(Blue_cor1, method="shade", shade.col=NA, tl.col="black", tl.srt=45, addCoef.col="black", addcolorlabel="no",title="Correlation Blue States")
+Blue2 = corrplot(Blue_cor2, method="shade", shade.col=NA, tl.col="black", tl.srt=45, addCoef.col="black", addcolorlabel="no",title="Correlation Blue States")
+Swing1 = corrplot(Swing_cor1, method="shade", shade.col=NA, tl.col="black", tl.srt=45, addCoef.col="black", addcolorlabel="no",title="Correlation Swing States")
+Swing2 = corrplot(Swing_cor2, method="shade", shade.col=NA, tl.col="black", tl.srt=45, addCoef.col="black", addcolorlabel="no",title="Correlation Swing States")
+
+Red1
+Red2
+Blue1
+Blue2
+Swing1
+Swing2
+```
+
+##Most Important Features
+```{r most important features red-blue-swing,cache=TRUE}
+Red_Features_clinton = RedStates[,c(8,19,20,26:28,30:35,40,42:63,67:76,83:85,87,89,100)]
+Red_Features_Trump = RedStates[,c(9,19,20,26:28,30:35,40,42:63,67:76,83:85,87,89,100)]
+Red_Features_Shift = RedStates[,c(19,20,26:28,30:35,40,42:63,67:76,83:85,87,89,98,100)]
+Blue_Features_clinton = BlueStates[,c(8,19,20,26:28,30:35,40,42:63,67:76,83:85,87,89,100)]
+Blue_Features_Trump = BlueStates[,c(9,19,20,26:28,30:35,40,42:63,67:76,83:85,87,89,100)]
+Blue_Features_Shift = BlueStates[,c(19,20,26:28,30:35,40,42:63,67:76,83:85,87,89,98,100)]
+Swing_Features_clinton = SwingStates[,c(8,19,20,26:28,30:35,40,42:63,67:76,83:85,87,89,100)]
+Swing_Features_Trump = SwingStates[,c(9,19,20,26:28,30:35,40,42:63,67:76,83:85,87,89,100)]
+Swing_Features_Shift = SwingStates[,c(19,20,26:28,30:35,40,42:63,67:76,83:85,87,89,98,100)]
+```
+
+###Red States
+
+####Clinton
+```{r Red State Clinton Most Important Features, cache=TRUE}
+library(h2o)
+
+h2o.init(nthreads=-1,max_mem_size='6G')
+
+red.Clinton = as.h2o(Red_Features_clinton)
+vars.Clinton = colnames(red.Clinton)
+x_vars.Clinton = c(vars.Clinton[2:51])
+y_var.Clinton = vars.Clinton[1]
+
+Clinton_features = h2o.randomForest(x=x_vars.Clinton,
+                                y=y_var.Clinton,
+                                seed=123,
+                                training_frame = red.Clinton,
+                                ntrees=200,
+                                stopping_rounds = 2,
+                                score_each_iteration = TRUE,
+                                nfolds = 10)
+
+summary(Clinton_features)
+
+h2o.varimp(Clinton_features)[1:20,]
+
+h2o.varimp_plot(Clinton_features, num_of_features = 20)
+```
+
+####Trump
+```{r Red State Trump Most Important Features, cache=TRUE}
+red.Trump = as.h2o(Red_Features_Trump)
+vars.Trump = colnames(red.Trump)
+x_vars.Trump = c(vars.Trump[2:51])
+y_var.Trump = vars.Trump[1]
+
+Trump_features = h2o.randomForest(x=x_vars.Trump,
+                                y=y_var.Trump,
+                                seed=123,
+                                training_frame = red.Trump,
+                                ntrees=200,
+                                stopping_rounds = 2,
+                                score_each_iteration = TRUE,
+                                nfolds = 10)
+
+summary(Trump_features)
+
+h2o.varimp(Trump_features)[1:20,]
+
+h2o.varimp_plot(Trump_features, num_of_features = 20)
+```
+
+####Swing
+```{r Red States Swing Most Important Features, cache=TRUE}
+red.Swing = as.h2o(Red_Features_Shift)
+vars.Swing = colnames(red.Swing)
+x_vars.Swing = c(vars.Swing[c(1:49,51)])
+y_var.Swing = vars.Swing[50]
+
+Swing_features = h2o.randomForest(x=x_vars.Swing,
+                                y=y_var.Swing,
+                                seed=123,
+                                training_frame = red.Swing,
+                                ntrees=200,
+                                stopping_rounds = 2,
+                                score_each_iteration = TRUE,
+                                nfolds = 10)
+
+summary(Swing_features)
+
+h2o.varimp(Swing_features)[1:20,]
+
+h2o.varimp_plot(Swing_features, num_of_features = 20)
+
+
+```
+
+###Blue States
+
+####Clinton
+```{r Blue State Clinton Most Important Features, cache=TRUE}
+blue.Clinton = as.h2o(Blue_Features_clinton)
+vars.Clinton = colnames(blue.Clinton)
+x_vars.Clinton = c(vars.Clinton[2:51])
+y_var.Clinton = vars.Clinton[1]
+
+Clinton_features = h2o.randomForest(x=x_vars.Clinton,
+                                y=y_var.Clinton,
+                                seed=123,
+                                training_frame = blue.Clinton,
+                                ntrees=200,
+                                stopping_rounds = 2,
+                                score_each_iteration = TRUE,
+                                nfolds = 10)
+
+summary(Clinton_features)
+
+h2o.varimp(Clinton_features)[1:20,]
+
+h2o.varimp_plot(Clinton_features, num_of_features = 20)
+```
+
+####Trump
+```{r Blue State Trump Most Important Features, cache=TRUE}
+blue.Trump = as.h2o(Blue_Features_Trump)
+vars.Trump = colnames(blue.Trump)
+x_vars.Trump = c(vars.Trump[2:51])
+y_var.Trump = vars.Trump[1]
+
+Trump_features = h2o.randomForest(x=x_vars.Trump,
+                                y=y_var.Trump,
+                                seed=123,
+                                training_frame = blue.Trump,
+                                ntrees=200,
+                                stopping_rounds = 2,
+                                score_each_iteration = TRUE,
+                                nfolds = 10)
+
+summary(Trump_features)
+
+h2o.varimp(Trump_features)[1:20,]
+
+h2o.varimp_plot(Trump_features, num_of_features = 20)
+```
+
+####Swing
+```{r Blue States Swing Most Important Features, cache=TRUE}
+blue.Swing = as.h2o(Blue_Features_Shift)
+vars.Swing = colnames(blue.Swing)
+x_vars.Swing = c(vars.Swing[c(1:49,51)])
+y_var.Swing = vars.Swing[50]
+
+Swing_features = h2o.randomForest(x=x_vars.Swing,
+                                y=y_var.Swing,
+                                seed=123,
+                                training_frame = blue.Swing,
+                                ntrees=200,
+                                stopping_rounds = 2,
+                                score_each_iteration = TRUE,
+                                nfolds = 10)
+
+summary(Swing_features)
+
+h2o.varimp(Swing_features)[1:20,]
+
+h2o.varimp_plot(Swing_features, num_of_features = 20)
+```
+
+###Swing States
+
+####Clinton
+```{r Swing State Clinton Most Important Features, cache=TRUE}
+swing.Clinton = as.h2o(Swing_Features_clinton)
+vars.Clinton = colnames(swing.Clinton)
+x_vars.Clinton = c(vars.Clinton[2:51])
+y_var.Clinton = vars.Clinton[1]
+
+Clinton_features = h2o.randomForest(x=x_vars.Clinton,
+                                y=y_var.Clinton,
+                                seed=123,
+                                training_frame = swing.Clinton,
+                                ntrees=200,
+                                stopping_rounds = 2,
+                                score_each_iteration = TRUE,
+                                nfolds = 10)
+
+summary(Clinton_features)
+
+h2o.varimp(Clinton_features)[1:20,]
+
+h2o.varimp_plot(Clinton_features, num_of_features = 20)
+```
+
+####Trump
+```{r Swing State Trump Most Important Features, cache=TRUE}
+swing.Trump = as.h2o(Swing_Features_Trump)
+vars.Trump = colnames(swing.Trump)
+x_vars.Trump = c(vars.Trump[2:51])
+y_var.Trump = vars.Trump[1]
+
+Trump_features = h2o.randomForest(x=x_vars.Trump,
+                                y=y_var.Trump,
+                                seed=123,
+                                training_frame = swing.Trump,
+                                ntrees=200,
+                                stopping_rounds = 2,
+                                score_each_iteration = TRUE,
+                                nfolds = 10)
+
+summary(Trump_features)
+
+h2o.varimp(Trump_features)[1:20,]
+
+h2o.varimp_plot(Trump_features, num_of_features = 20)
+```
+
+####Swing
+```{r Swing States Swing Most Important Features, cache=TRUE}
+swing.Swing = as.h2o(Swing_Features_Shift)
+vars.Swing = colnames(swing.Swing)
+x_vars.Swing = c(vars.Swing[c(1:49,51)])
+y_var.Swing = vars.Swing[50]
+
+Swing_features = h2o.randomForest(x=x_vars.Swing,
+                                y=y_var.Swing,
+                                seed=123,
+                                training_frame = swing.Swing,
+                                ntrees=200,
+                                stopping_rounds = 2,
+                                score_each_iteration = TRUE,
+                                nfolds = 10)
+
+summary(Swing_features)
+
+h2o.varimp(Swing_features)[1:20,]
+
+h2o.varimp_plot(Swing_features, num_of_features = 20)
+```
+
+###Explaining away the Shift in Swing States
+```{r explaining away shift in swing states,cache=T}
+Swing_1 = summary(lm(per_shift ~ Swing_Features_Shift[,17], data=Swing_Features_Shift))$adj.r.squared
+Swing_2 = summary(lm(per_shift ~ Swing_Features_Shift[,17] + Swing_Features_Shift[,5],data=Swing_Features_Shift))$adj.r.squared
+Swing_3 = summary(lm(per_shift ~ Swing_Features_Shift[,17] + Swing_Features_Shift[,5] + Swing_Features_Shift[,14],data=Swing_Features_Shift))$adj.r.squared
+Swing_4 = summary(lm(per_shift ~ Swing_Features_Shift[,17] + Swing_Features_Shift[,5] + Swing_Features_Shift[,14] + Swing_Features_Shift[,23],data=Swing_Features_Shift))$adj.r.squared
+Swing_5 = summary(lm(per_shift ~ Swing_Features_Shift[,17] + Swing_Features_Shift[,5] + Swing_Features_Shift[,14] + Swing_Features_Shift[,23] + Swing_Features_Shift[,10],data=Swing_Features_Shift))$adj.r.squared
+
+
+theswing = c(0,Swing_1,Swing_2,Swing_3,Swing_4,Swing_5)
+num = c(0,1,2,3,4,5)
+
+plot(num,
+     theswing,
+     col = "blue",
+     type = "b",
+     main = "Accuracy for Features Selected",
+     xlab = "Number of features",
+     ylab = "Accuracy")
+
+cat("Swing - Edu_batchelors:", Swing_1)
+```
+
+###My Model - Revisited
+```{r My Model Revisited, cache=TRUE}
+my_subset = Swing_Features_Shift[,c(5,8,10,12,17,22,23,26,42,46,50,51)]
+my_subset = na.omit(my_subset)
+my_subset$IncomeXPopChange = my_subset$population_change * my_subset$Edu_batchelors
+my_model = lm(per_shift ~ .,data=my_subset)
+summary(my_model)
+
+```
+
+
+#Polarization Measure
+
+##Density Plot
+```{r polarization measure - density, cache=TRUE}
+votes$margin_2016 = abs(votes$Trump - votes$Clinton)
+votes$margin_2012 = abs(votes$Obama - votes$Romney)
+votes$polarization = votes$margin_2016 - votes$margin_2012
+
+plot(density(votes$margin_2016), 
+         main = "County Winner Density Plot",
+         ylab = "density",
+         xlab = "county margin",
+         ylim=c(0,.020),
+         xlim=c(0,100),
+         col="red")
+par(new=T)
+plot(density(votes$margin_2012), 
+         main = "County Winner Density Plot",
+         ylab = "density",
+         xlab = "county margin",
+         ylim=c(0,.020),
+         xlim=c(0,100),
+         col="blue")
+legend("topright",legend=c("2012","2016"),fill=c("blue","red"))
+```
+
+
+##Ploting Polarization
+```{r Polarization Plots, cache=TRUE}
+polarization = votes[,c(1,113)]
+colnames(polarization) = c("region","value")
+polarization$value = cut(polarization$value, breaks = c(-Inf,0,Inf), labels=c("Less Polarized","More Polarized"))
+
+
+c= CountyChoropleth$new(polarization)
+c$title = "Polarization Shift Measurement"
+c$add_state_outline = TRUE
+c$set_num_colors(2)
+c$ggplot_scale = scale_fill_manual(values = c("darkblue","red"))
+c$legend = "Polarization Scale"
+c$set_zoom(c("maine","new hampshire", "vermont", "massachusetts","connecticut","rhode island","new york", "pennsylvania", "new jersey", "maryland","delaware","west virginia","virginia","tennessee","kentucky","north carolina","south carolina","georgia","florida","arkansas","mississippi","alabama","louisiana","ohio","michigan","indiana","illinois","wisconsin","minnesota","iowa","missouri","north dakota","south dakota","nebraska","kansas","texas","oklahoma","new mexico","arizona","colorado","wyoming","montana","idaho","utah","nevada","california","oregon","washington"))
+county_polarization = c$render() + theme(legend.position = "right")
+county_polarization
+```
+
+##2016 Polarization Results
+```{r 2016 polarization results, cache=TRUE}
+polarization2016 = votes[,c(1,111)]
+colnames(polarization2016) = c("region","value")
+polarization2016$value = cut(polarization2016$value, breaks = c(0,10,20,50,Inf), labels=c("0%-10% Margin","10%-20% Margin","20%-50% Margin","50%-100% Margin"))
+
+
+c= CountyChoropleth$new(polarization2016)
+c$title = "Polarization Measurement - 2016"
+c$add_state_outline = TRUE
+c$set_num_colors(4)
+c$ggplot_scale = scale_fill_manual(values = c("darkblue","lightblue","red","darkred"))
+c$legend = "Polarization Scale"
+c$set_zoom(c("maine","new hampshire", "vermont", "massachusetts","connecticut","rhode island","new york", "pennsylvania", "new jersey", "maryland","delaware","west virginia","virginia","tennessee","kentucky","north carolina","south carolina","georgia","florida","arkansas","mississippi","alabama","louisiana","ohio","michigan","indiana","illinois","wisconsin","minnesota","iowa","missouri","north dakota","south dakota","nebraska","kansas","texas","oklahoma","new mexico","arizona","colorado","wyoming","montana","idaho","utah","nevada","california","oregon","washington"))
+county_polarization2016 = c$render() + theme(legend.position = "right")
+county_polarization2016
+
+polarization2012 = votes[,c(1,112)]
+colnames(polarization2012) = c("region","value")
+polarization2012$value = cut(polarization2012$value, breaks = c(0,10,20,50,Inf), labels=c("0%-10% Margin","10%-20% Margin","20%-50% Margin","50%-100% Margin"))
+
+
+c= CountyChoropleth$new(polarization2012)
+c$title = "Polarization Measurement - 2012"
+c$add_state_outline = TRUE
+c$set_num_colors(4)
+c$ggplot_scale = scale_fill_manual(values = c("darkblue","lightblue","red","darkred"))
+c$legend = "Polarization Scale"
+c$set_zoom(c("maine","new hampshire", "vermont", "massachusetts","connecticut","rhode island","new york", "pennsylvania", "new jersey", "maryland","delaware","west virginia","virginia","tennessee","kentucky","north carolina","south carolina","georgia","florida","arkansas","mississippi","alabama","louisiana","ohio","michigan","indiana","illinois","wisconsin","minnesota","iowa","missouri","north dakota","south dakota","nebraska","kansas","texas","oklahoma","new mexico","arizona","colorado","wyoming","montana","idaho","utah","nevada","california","oregon","washington"))
+county_polarization2012 = c$render() + theme(legend.position = "right")
+county_polarization2012
+
+
+polarization10 = votes[,c(1,111)]
+colnames(polarization10) = c("region","value")
+polarization10$value = cut(polarization10$value, breaks = c(0,10,Inf), labels=c("<10% Margin",">10% Margin"))
+
+
+c= CountyChoropleth$new(polarization10)
+c$title = "Polarization @ 10% Margin - 2016"
+c$add_state_outline = TRUE
+c$set_num_colors(2)
+c$ggplot_scale = scale_fill_manual(values = c("darkblue","white"))
+c$legend = "Polarization Scale"
+c$set_zoom(c("maine","new hampshire", "vermont", "massachusetts","connecticut","rhode island","new york", "pennsylvania", "new jersey", "maryland","delaware","west virginia","virginia","tennessee","kentucky","north carolina","south carolina","georgia","florida","arkansas","mississippi","alabama","louisiana","ohio","michigan","indiana","illinois","wisconsin","minnesota","iowa","missouri","north dakota","south dakota","nebraska","kansas","texas","oklahoma","new mexico","arizona","colorado","wyoming","montana","idaho","utah","nevada","california","oregon","washington"))
+county_polarization10 = c$render() + theme(legend.position = "right")
+county_polarization10
+
+polarization102 = votes[,c(1,112)]
+colnames(polarization102) = c("region","value")
+polarization102$value = cut(polarization102$value, breaks = c(0,10,Inf), labels=c("<10% Margin",">10% Margin"))
+
+
+c= CountyChoropleth$new(polarization102)
+c$title = "Polarization @ 10% Margin - 2012"
+c$add_state_outline = TRUE
+c$set_num_colors(2)
+c$ggplot_scale = scale_fill_manual(values = c("darkblue","white"))
+c$legend = "Polarization Scale"
+c$set_zoom(c("maine","new hampshire", "vermont", "massachusetts","connecticut","rhode island","new york", "pennsylvania", "new jersey", "maryland","delaware","west virginia","virginia","tennessee","kentucky","north carolina","south carolina","georgia","florida","arkansas","mississippi","alabama","louisiana","ohio","michigan","indiana","illinois","wisconsin","minnesota","iowa","missouri","north dakota","south dakota","nebraska","kansas","texas","oklahoma","new mexico","arizona","colorado","wyoming","montana","idaho","utah","nevada","california","oregon","washington"))
+county_polarization102 = c$render() + theme(legend.position = "right")
+county_polarization102
+
+polarization20 = votes[,c(1,111)]
+colnames(polarization20) = c("region","value")
+polarization20$value = cut(polarization20$value, breaks = c(0,20,Inf), labels=c("<20% Margin",">20% Margin"))
+
+
+c= CountyChoropleth$new(polarization20)
+c$title = "Polarization @ 20% Margin - 2016"
+c$add_state_outline = TRUE
+c$set_num_colors(2)
+c$ggplot_scale = scale_fill_manual(values = c("darkblue","white"))
+c$legend = "Polarization Scale"
+c$set_zoom(c("maine","new hampshire", "vermont", "massachusetts","connecticut","rhode island","new york", "pennsylvania", "new jersey", "maryland","delaware","west virginia","virginia","tennessee","kentucky","north carolina","south carolina","georgia","florida","arkansas","mississippi","alabama","louisiana","ohio","michigan","indiana","illinois","wisconsin","minnesota","iowa","missouri","north dakota","south dakota","nebraska","kansas","texas","oklahoma","new mexico","arizona","colorado","wyoming","montana","idaho","utah","nevada","california","oregon","washington"))
+county_polarization20 = c$render() + theme(legend.position = "right")
+county_polarization20
+
+polarization202 = votes[,c(1,112)]
+colnames(polarization202) = c("region","value")
+polarization202$value = cut(polarization202$value, breaks = c(0,20,Inf), labels=c("<20% Margin",">20% Margin"))
+
+
+c= CountyChoropleth$new(polarization202)
+c$title = "Polarization @ 20% Margin - 2012"
+c$add_state_outline = TRUE
+c$set_num_colors(2)
+c$ggplot_scale = scale_fill_manual(values = c("darkblue","white"))
+c$legend = "Polarization Scale"
+c$set_zoom(c("maine","new hampshire", "vermont", "massachusetts","connecticut","rhode island","new york", "pennsylvania", "new jersey", "maryland","delaware","west virginia","virginia","tennessee","kentucky","north carolina","south carolina","georgia","florida","arkansas","mississippi","alabama","louisiana","ohio","michigan","indiana","illinois","wisconsin","minnesota","iowa","missouri","north dakota","south dakota","nebraska","kansas","texas","oklahoma","new mexico","arizona","colorado","wyoming","montana","idaho","utah","nevada","california","oregon","washington"))
+county_polarization202 = c$render() + theme(legend.position = "right")
+county_polarization202
+```
+
+##Change in polarization
+```{r change in polarization, cache=TRUE}
+
+pol_2016 = (length(which(polarization10$value=="<10% Margin")) / dim(polarization10)[1]) * 100
+pol_2012 = (length(which(polarization102$value=="<10% Margin")) / dim(polarization102)[1]) * 100
+increase_pol10 = pol_2012 - pol_2016
+cat("% Counties Polarization Increase @ 10% Level: ", increase_pol10, "\n")
+
+pol_20162 = (length(which(polarization20$value=="<20% Margin")) / dim(polarization20)[1]) * 100
+pol_20122 = (length(which(polarization202$value=="<20% Margin")) / dim(polarization202)[1]) * 100
+increase_pol20 = pol_20122 - pol_20162
+cat("% Counties Polarization Increase @ 20% Level: ", increase_pol20, "\n")
+
+cat("% Counties that were within 20% points: ", (length(which(polarization20$value=="<20% Margin")) / dim(polarization20)[1]) * 100, "\n")
+cat("% Counties that were within 10% points: ", (length(which(polarization10$value=="<10% Margin")) / dim(polarization10)[1]) * 100, "\n")
+
+votes$AvgPol_2016 = votes$total_votes_2016 * votes$margin_2016
+votes$AvgPol_2012 = votes$total_votes_2012 * votes$margin_2012
+
+polarization_2016 = sum(votes$AvgPol_2016) / sum(votes$total_votes_2016)
+cat('Polarization 2016: ',polarization_2016,'\n')
+
+polarization_2012 = sum(votes$AvgPol_2012) / sum(votes$total_votes_2012)
+cat('Polarization 2012:', polarization_2012,'\n')
+
+pol_change = polarization_2016 - polarization_2012
+cat('Polarization Change: ',pol_change,'\n')
+```
 
