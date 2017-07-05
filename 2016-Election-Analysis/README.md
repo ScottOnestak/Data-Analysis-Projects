@@ -7,3 +7,5 @@ Hoping to join this data set with a county-level religion data set to account fo
 Religion data set collected from: [Religion Data Set](http://old.socialexplorer.com/pub/reportdata/GeoSelection.aspx?ReportId=R10152771)
 
 The data was collected in 2009 by InfoGroup.
+
+)Link to findings and analysis: [Analysis}(http://scottonestak.com/projects/election-2016/technical-analysis.html)
