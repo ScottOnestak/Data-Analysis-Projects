@@ -8,4 +8,4 @@ Religion data set collected from: [Religion Data Set](http://old.socialexplorer.
 
 The data was collected in 2009 by InfoGroup.
 
-)Link to findings and analysis: [Analysis}(http://scottonestak.com/projects/election-2016/technical-analysis.html)
+Link to findings and analysis: [Analysis](http://scottonestak.com/projects/election-2016/technical-analysis.html)
